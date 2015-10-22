@@ -1,4 +1,4 @@
-Un projet dans le cadre de l'apprentissage de Javascript proposé par OpenClassRooms
+#Un projet dans le cadre de l'apprentissage de Javascript proposé par OpenClassRooms
 https://openclassrooms.com/courses/creez-un-jeu-de-plateau-tour-par-tour-en-javascript/consignes-22
 
 
