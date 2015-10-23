@@ -84,6 +84,7 @@ var Player = {
             console.log(this.name + " attacks " 
                         + player.name + " with " + this.weapon + ".");
         }
+        console.log(player);
         if (!player.isAlive()) {
             return (false);
         }
