@@ -28,10 +28,10 @@ var Player = {
     ** @param firstPlayer : boolean
     */
     init: function(name, firstPlayer) {
-        this.name = name || DEFAULT_PLAYER_NAME + (firstPlayer) ? "P1" : "P2";
+        this.name = name || DEFAULT_PLAYER_NAME + ((firstPlayer === true) ? " 1" : " 2");
         this.hp = MAX_HP;
         if (DEBUG) {
-            console.log("Created new player : \n\t" + this);
+            console.log("New player created : \n\t" + this);
         }
     },
     
@@ -41,10 +41,10 @@ var Player = {
     ** @param : int
     */
     setStance: function(stance) {
-        this.stance = stance;
+        this.stance = (stance !== ATTACK_STANCE) ? DEFENSE_STANCE : ATTACK_STANCE;
         if (DEBUG) {
             console.log("Player " + this.name + " switched stance to "
-                        + (this.stance === DEFENSE_STANCE) ? "defense" : "attack" + ".");
+                        + ((this.stance === DEFENSE_STANCE) ? "defense" : "attack") + ".");
         }
     },
     
@@ -77,31 +77,42 @@ var Player = {
     ** attackPlayer
     ** Attacks targeted player
     ** @param player : Player
+    ** @return : boolean
     */
     attack: function(player) {
         if (DEBUG) {
-            console.log("Player " + this.name + " attacks " 
+            console.log(this.name + " attacks " 
                         + player.name + " with " + this.weapon + ".");
+        }
+        if (!player.isAlive()) {
+            return (false);
         }
         if (this.weapon != null) {
             player.takeDamage(this.weapon.damage);
         } else {
             player.takeDamage(0);
         }
+        return (true);
     },
     
     /*
     ** takeDamage
     ** Decreases current hp by damage value
     ** @param damage : integer
+    ** @return : boolean
     */
     takeDamage: function(damage) {
+        if (!this.isAlive()) {
+            return (false);
+        }
         this.hp -= (this.stance === DEFENSE_STANCE) 
             ? Math.ceil(damage / 2) : damage;
+        this.hp = (this.hp < 0) ? 0 : this.hp;
         if (DEBUG) {
-            console.log("Player " + this.name + " takes " + damage
+            console.log(this.name + " takes " + damage
                         + " damage.\nCurrent hp : " + this.hp + ".");
         }
+        return (true);
     },
     
     /*
@@ -125,9 +136,3 @@ var Player = {
                + ", alive : " + this.isAlive());
     }
 };
-
-/** Tests **/
-
-
-
-/** Tests End **/

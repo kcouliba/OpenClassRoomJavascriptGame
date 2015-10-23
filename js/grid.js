@@ -74,27 +74,3 @@ function generateGrid(size, obstacleCount) {
     }
     return (grid);
 }
-
-/** Tests **/
-
-var grid = Object.create(Grid);
-
-grid.init();
-
-/** Tests End **/
-
-/*
-** Grid Class
-** Alternative version
-*/
-/*
-function Grid() {
-    this.size = SIZE;
-    this.obstacles = Math.floor(Math.random() * MAX_OBSTACLE_COUNT);
-    this.grid = [];
-    
-    this.init = function() {
-        
-    };
-}
-*/

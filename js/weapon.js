@@ -37,34 +37,3 @@ var Weapon = {
         return ("name : " + this.name + " damage : " + this.damage);
     }
 };
-
-/** Tests **/
-
-var gloves = Object.create(Weapon);
-var baseballBat = Object.create(Weapon);
-var knife = Object.create(Weapon);
-var chain = Object.create(Weapon);
-
-gloves.init("Gloves", Math.round(DEFAULT_DAMAGE));
-baseballBat.init("Baseball Bat", Math.round(DEFAULT_DAMAGE * 1.5));
-chain.init("Chain", Math.round(DEFAULT_DAMAGE * 1.8));
-knife.init("Knife", Math.round(DEFAULT_DAMAGE * 2));
-
-/** Tests End **/
-
-/*
-** Weapon Class
-** Alternative Version
-*/
-/*
-function Weapon(name, damage) {
-    this.name = name || DEFAULT_WEAPON_NAME;
-    this.damage = parseInt(damage) || DEFAULT_DAMAGE;
-    
-    console.log("New weapon created : " + this.toString());
-    
-    this.toString = function() {
-        return ("name : " + this.name + " damage : " + this.damage);
-    };
-}
-*/
