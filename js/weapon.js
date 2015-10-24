@@ -1,7 +1,7 @@
 /*
 ** weapon.js
 ** Author coulibaly.d.kevin@gmail.com
-** Date 23/10/2015
+** Date 24/10/2015
 ** Weapon definition
 */
 
@@ -37,3 +37,12 @@ var Weapon = {
         return ("name : " + this.name + " damage : " + this.damage);
     }
 };
+
+var createWeapon = (function() {
+    return (function (name, damage) {
+        var weapon = Object.create(Weapon);
+
+        weapon.init(name, damage);
+        return (weapon);
+    });
+})();
