@@ -11,6 +11,7 @@ function include(jsfile) {
 include("grid");
 include("weapon");
 include("player");
+include("scripts");
 include("tests");
 
 
