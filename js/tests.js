@@ -2,7 +2,7 @@
 ** tests.js
 ** Author coulibaly.d.kevin@gmail.com
 ** Date 24/10/2015
-** A test file for running scripts
+** A test class for running tests
 ** Caution : All other files must have been loaded before that one
 */
 
