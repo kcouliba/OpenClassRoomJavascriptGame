@@ -1,12 +1,13 @@
 /*
 ** player.js
 ** Author coulibaly.d.kevin@gmail.com
-** Date 23/10/2015
+** Date 24/10/2015
 ** Player definition
 */
 
 /** Constant values */
 const DEFAULT_PLAYER_NAME = "Player";
+const MAX_PLAYER_COUNT = 2;
 const MAX_HP = 100;
 const MAX_MOVE = 3; // How many cells can the player go through
 const ATTACK_STANCE = 0;
@@ -27,8 +28,8 @@ var Player = {
     ** @param name : string
     ** @param firstPlayer : boolean
     */
-    init: function(name, firstPlayer) {
-        this.name = name || DEFAULT_PLAYER_NAME + ((firstPlayer === true) ? " 1" : " 2");
+    init: function(name, id) {
+        this.name = name || DEFAULT_PLAYER_NAME + " " + id;
         this.hp = MAX_HP;
         if (DEBUG) {
             console.log("New player created : \n\t" + this);
@@ -84,7 +85,6 @@ var Player = {
             console.log(this.name + " attacks " 
                         + player.name + " with " + this.weapon + ".");
         }
-        console.log(player);
         if (!player.isAlive()) {
             return (false);
         }
@@ -137,3 +137,18 @@ var Player = {
                + ", alive : " + this.isAlive());
     }
 };
+
+var createPlayer = (function() {
+    var count = 0;
+    
+    return (function (name) {
+        if (count >= MAX_PLAYER_COUNT) {
+            return (null);
+        }
+        var player = Object.create(Player);
+
+        count++;
+        player.init(name, count);
+        return (player);
+    });
+})();
