@@ -56,23 +56,27 @@ var Player = {
             console.log("Player " + this.name + " switched stance to "
                         + ((this.stance === Player.stance.defense) ? "defense" : "attack") + ".");
         }
+        return (this);
     },
 
     /*
     ** dropWeapon
     ** Drops current weapon (set to null)
+    ** @return this
     */
     dropWeapon: function() {
         this.weapon = null;
         if (DEBUG) {
             console.log("Player " + this.name + " dropped his weapon.");
         }
+        return (this);
     },
 
     /*
     ** equipWeapon
     ** Drops current weapon and equip new one
     ** @param weapon : Weapon
+    ** @return this
     */
     equipWeapon: function(weapon) {
         this.dropWeapon();
@@ -81,6 +85,7 @@ var Player = {
             console.log("Player " + this.name + " equiped " 
                         + this.weapon + ".");
         }
+        return (this);
     },
 
     /*
@@ -143,6 +148,6 @@ var Player = {
         return ("player name : " + this.name
                 + ", hp : " + this.hp
                 + ", equipped weapon : " + this.weapon
-                + ", alive : " + this.isAlive());
+                + ", " + (this.isAlive() ? "alive" : "dead"));
     }
 };
