@@ -6,6 +6,7 @@
 */
 
 var Game = {
+    run: false,
     grid: null,
     weapons: [],
     players: [],
@@ -75,9 +76,31 @@ var Game = {
     ** init
     ** Initializes a game
     */
-    init: function() {
+    init: function(grid, weapons, players) {
+        this.grid = grid;
+        for (var i = 0; i < weapons.length; i++) {
+            this.weapons.push(this.Element.new(weapons[i]));
+        }
+        for (var i = 0; i < players.length; i++) {
+            this.players.push(this.Element.new(players[i]));
+        }
         this.placeElements();
+        if (DEBUG) {
+            console.log("Game starts.");
+        }
         return (this);
+    },
+    
+    start: function() {
+        this.run = true;
+    },
+    
+    running: function() {
+        return (this.run);
+    },
+    
+    stop: function() {
+        this.run = false;
     },
 
     /*
@@ -88,20 +111,20 @@ var Game = {
     ** @param players : Player Array
     ** @return this : Game instance
     */
-    new: function(grid, weapons, players) {
-        var self = Object.create(this);
+    new: function(/*grid, weapons, players*/) {
+//        var self = Object.create(this);
         
-        self.grid = grid;
-        for (var i = 0; i < weapons.length; i++) {
-            self.weapons.push(this.Element.new(weapons[i]));
-        }
-        for (var i = 0; i < players.length; i++) {
-            self.players.push(this.Element.new(players[i]));
-        }
+//        self.grid = grid;
+//        for (var i = 0; i < weapons.length; i++) {
+//            self.weapons.push(this.Element.new(weapons[i]));
+//        }
+//        for (var i = 0; i < players.length; i++) {
+//            self.players.push(this.Element.new(players[i]));
+//        }
         if (DEBUG) {
             console.log("A new game has been created.");
         }
-        return (self);
+        return (Object.create(this));
     },
     
     /*
