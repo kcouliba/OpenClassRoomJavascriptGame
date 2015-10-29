@@ -6,7 +6,7 @@
 ** Caution : All other files must have been loaded before that one
 */
 
-var scripts = {
+var Scripts = {
     scripts: { },
     
     /*
