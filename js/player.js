@@ -1,7 +1,7 @@
 /*
 ** player.js
 ** Author coulibaly.d.kevin@gmail.com
-** Date 24/10/2015
+** Date 29/10/2015
 ** Player definition
 */
 
@@ -21,12 +21,13 @@ var Player = {
     hp: MAX_HP,
     weapon: null,
     stance: ATTACK_STANCE,
-    
+
     /*
     ** init
     ** Constructor
     ** @param name : string
     ** @param firstPlayer : boolean
+    ** @return this
     */
     init: function(name, id) {
         this.name = name || DEFAULT_PLAYER_NAME + " " + id;
@@ -34,8 +35,26 @@ var Player = {
         if (DEBUG) {
             console.log("New player created : \n\t" + this);
         }
+        return (this);
     },
-    
+
+    /*
+    ** new
+    ** @param name : string (optional)
+    ** @return a new instance of Player
+    */
+    _new: (function() {
+        var count = 0;
+
+        return (function (name) {
+            if (count >= MAX_PLAYER_COUNT) {
+                return (null);
+            }
+            count++;
+            return (Object.create(Player).init(name, count));
+        });
+    })(),
+
     /*
     ** setStance
     ** Changes player's stance
@@ -48,7 +67,7 @@ var Player = {
                         + ((this.stance === DEFENSE_STANCE) ? "defense" : "attack") + ".");
         }
     },
-    
+
     /*
     ** dropWeapon
     ** Drops current weapon (set to null)
@@ -59,7 +78,7 @@ var Player = {
             console.log("Player " + this.name + " dropped his weapon.");
         }
     },
-    
+
     /*
     ** equipWeapon
     ** Drops current weapon and equip new one
@@ -73,7 +92,7 @@ var Player = {
                         + this.weapon + ".");
         }
     },
-    
+
     /*
     ** attackPlayer
     ** Attacks targeted player
@@ -95,7 +114,7 @@ var Player = {
         }
         return (true);
     },
-    
+
     /*
     ** takeDamage
     ** Decreases current hp by damage value
@@ -115,7 +134,7 @@ var Player = {
         }
         return (true);
     },
-    
+
     /*
     ** isAlive
     ** Checks if player hp are not down
@@ -124,7 +143,7 @@ var Player = {
     isAlive: function() {
         return (this.hp > 0);
     },
-    
+
     /*
     ** toString
     ** Returns a string representation of the instance
@@ -132,23 +151,8 @@ var Player = {
     */
     toString: function() {
         return ("player name : " + this.name
-               + ", hp : " + this.hp
-               + ", equipped weapon : " + this.weapon
-               + ", alive : " + this.isAlive());
+                + ", hp : " + this.hp
+                + ", equipped weapon : " + this.weapon
+                + ", alive : " + this.isAlive());
     }
 };
-
-var createPlayer = (function() {
-    var count = 0;
-    
-    return (function (name) {
-        if (count >= MAX_PLAYER_COUNT) {
-            return (null);
-        }
-        var player = Object.create(Player);
-
-        count++;
-        player.init(name, count);
-        return (player);
-    });
-})();

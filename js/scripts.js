@@ -1,7 +1,7 @@
 /*
 ** scripts.js
 ** Author coulibaly.d.kevin@gmail.com
-** Date 24/10/2015
+** Date 29/10/2015
 ** A script class for running scripts
 ** Caution : All other files must have been loaded before that one
 */
@@ -50,15 +50,15 @@ var scripts = {
     }
 };
 
-//var p1 = createPlayer();
-//var p2 = createPlayer();
+//var p1 = Player.new();
+//var p2 = Player.new();
 
 //scripts.add("p1AttacksP2WithoutWeapon", function() {    
 //    return (p1.attack(p2));
 //});
 //
 //scripts.add("p1AttacksP2WithGloves", function() {    
-//    p1.equipWeapon(createWeapon("Gloves"));
+//    p1.equipWeapon(Weapon.new("Gloves"));
 //    return (p1.attack(p2));
 //});
 
