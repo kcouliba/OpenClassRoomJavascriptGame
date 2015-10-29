@@ -27,7 +27,9 @@ var Grid = {
     ** @return CELLSTATE : int
     */
     stateAt: function(x, y) {
-        console.log("State at (" + x + ", " + y + ") = " + this.grid[x + (y * this.size)]);
+        if (DEBUG) {
+            console.log("State at (" + x + ", " + y + ") = " + this.grid[x + (y * this.size)]);
+        }
         return (this.grid[x + (y * this.size)]);
     },
     
@@ -45,6 +47,7 @@ var Grid = {
         if (DEBUG) {
             console.log("New grid created.");
             console.log(self);
+            console.log(self.toString());
         }
         return (self);
     },
