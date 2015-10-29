@@ -16,5 +16,6 @@ const MAX_PLAYER_MOVE = 3; // How many cells can the player go through
 /*
 ** Weapon constants
 */
+const MAX_WEAPON_COUNT
 const DEFAULT_WEAPON_NAME = "Gloves";
 const DEFAULT_WEAPON_DAMAGE = 10;
