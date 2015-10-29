@@ -10,11 +10,11 @@ const SIZE = 10;
 */
 const DEFAULT_PLAYER_NAME = "Player";
 const MAX_PLAYER_COUNT = 2;
-const MAX_HP = 100;
-const MAX_MOVE = 3; // How many cells can the player go through
+const MAX_PLAYER_HP = 100;
+const MAX_PLAYER_MOVE = 3; // How many cells can the player go through
 
 /*
 ** Weapon constants
 */
 const DEFAULT_WEAPON_NAME = "Gloves";
-const DEFAULT_DAMAGE = 10;
+const DEFAULT_WEAPON_DAMAGE = 10;
