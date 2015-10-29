@@ -9,12 +9,14 @@
 ** Grid Class
 */
 var Grid = {
-    size: 10,
+    size: 0,
     obstacles: 0,
     grid: [],
     CELLSTATE: {
         free: 0,
-        busy: 1
+        obstacle: 1,
+        player: 2,
+        weapon: 3
     },
     
     /*
@@ -79,7 +81,7 @@ function generateGrid(size, obstacleCount) {
     for (var i = 0; i < cellsCount; i++) {
         row += (i % 10 == 0) ? 1 : 0;
         if ((Math.round(Math.random() * cellsCount) < 15) && (obstacleCount-- > 0)) {
-            grid.push(Grid.CELLSTATE.busy);
+            grid.push(Grid.CELLSTATE.obstacle);
         } else {
             grid.push(Grid.CELLSTATE.free);
         }
