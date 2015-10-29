@@ -22,6 +22,24 @@ var Game = {
             self.y = y;
             return (self);
         },
+        
+        add: function(position) {
+            return (this.new(this.x + position.x, this.y + position.y));
+        },
+        
+        sub: function(position) {
+            return (this.new(this.x - position.x, this.y - position.y));
+        },
+        
+        clone: function(rhs) {
+            if (this != rhs) {
+                return (this.new(rhs.x, rhs.y));
+            }
+        },
+
+        equals: function(position) {
+            return ((this.x === position.x) && (this.y === position.y));
+        },
 
         toString: function () {
             return ("(" + this.x + ", " + this.y + ")");
@@ -96,6 +114,16 @@ var Game = {
 //        this.placeWeapons();
         return (this);
     },
+    
+    getWeaponAt: function(x, y) {
+        var at = this.Position.new(x, y);
+        
+        for (key in this.weapons) {
+            if (this.weapons[key].position.equals(at)) {
+                return (this.weapons[key]);
+            }
+        }
+    },
 
     /*
     ** placePlayers
@@ -104,10 +132,10 @@ var Game = {
     */
     placePlayers: function() {
         // Place player1
-        for (var i = 0; i < Math.floor(this.grid.size / 2); i++) {
+        for (var j = 0; j < Math.floor(this.grid.size / 2); j++) {
             var placed = false;
 
-            for (var j = 0; j < Math.floor(this.grid.size / 2); j++) {
+            for (var i = 0; i < Math.floor(this.grid.size / 2); i++) {
                 if (this.grid.grid[i + (j * this.grid.size)] === Grid.CELLSTATE.free) {
                     this.grid.grid[i + (j * this.grid.size)] = Grid.CELLSTATE.player;
                     this.players[0].setPosition(i, j);
@@ -117,17 +145,16 @@ var Game = {
             }
             if (placed) {
                 if (DEBUG) {
-//                    console.log(this.players[0]);
                     console.log(this.players[0] + ", placed at position " + this.players[0].getPosition());
                 }
                 break ;
             }
         }
         // Place player2
-        for (var i = this.grid.size - 1; i > Math.floor(this.grid.size / 2); i--) {
+        for (var j = this.grid.size - 1; j > Math.floor(this.grid.size / 2); j--) {
             var placed = false;
 
-            for (var j = this.grid.size - 1; j > Math.floor(this.grid.size / 2); j--) {
+            for (var i = this.grid.size - 1; i > Math.floor(this.grid.size / 2); i--) {
                 if (this.grid.grid[i + (j * this.grid.size)] === Grid.CELLSTATE.free) {
                     this.grid.grid[i + (j * this.grid.size)] = Grid.CELLSTATE.player;
                     this.players[1].setPosition(i, j);
@@ -137,12 +164,111 @@ var Game = {
             }
             if (placed) {
                 if (DEBUG) {
-                    console.log(this.players[1]);
                     console.log(this.players[1] + ", placed at position " + this.players[1].getPosition());
                 }
                 break ;
             }
         }
         return (this);
+    },
+    
+    /*
+    ** movePlayer
+    ** Moves a player to a new position
+    ** Returns player after move
+    ** @param id : int
+    ** @param stepx : int
+    ** @param stepy : int
+    ** @return player : Player
+    */
+    movePlayer: function(id, stepx, stepy) {
+        var player = this.players[id];
+        var currentPos = this.Position.clone(player.getPosition());
+        var move = this.Position.new(stepx, stepy);
+        var nextPos = currentPos.add(move);
+        var grid = this.grid;
+        
+        if (DEBUG) {
+            console.log("Before computing");
+            console.log("Grid state ==> ");
+            console.log(grid);
+            console.log("Player selected is at position : " + currentPos);
+            console.log("Move input is : " + move);
+            console.log("Player next position should be : " + nextPos);
+        }
+        
+        if (stepx < 0) { // moving left
+            if (DEBUG) {
+                console.log("Player " + player.name + " is moving left");
+            }
+            for (var i = currentPos.x - 1; i >= nextPos.x; i--) {
+                if (grid.stateAt(i, currentPos.y) === Grid.CELLSTATE.weapon) { // weapon encountered
+                    player.equipWeapon(this.getWeaponAt(i, currentPos.y));
+                } else if (grid.stateAt(i, currentPos.y) !== Grid.CELLSTATE.free) { // obstacle or player encountered
+                    if (DEBUG) {
+                        console.log("Player " + player.name + " encountered an obstacle at : " + this.Position.new(i, currentPos.y));
+                    }
+                    nextPos.x = i + 1;
+                    break ;
+                }
+            }
+        } else if (stepx > 0) { // moving right
+            if (DEBUG) {
+                console.log("Player " + player.name + " is moving right");
+            }
+            for (var i = currentPos.x + 1; i <= nextPos.x; i++) {
+                if (grid.grid[i + (currentPos.y * grid.size)] === Grid.CELLSTATE.weapon) { // weapon encountered
+                    player.equipWeapon(this.getWeaponAt(i, currentPos.y));
+                } else if (grid.stateAt(i, currentPos.y) !== Grid.CELLSTATE.free) { // obstacle or player encountered
+                    if (DEBUG) {
+                        console.log("Player " + player.name + " encountered an obstacle at : " + this.Position.new(i, currentPos.y));
+                    }
+                    nextPos.x = i - 1;
+                    break ;
+                }
+            }
+        }
+        if (stepy < 0) { // moving up
+            if (DEBUG) {
+                console.log("Player " + player.name + " is moving up");
+            }
+            for (var i = currentPos.y - 1; i >= nextPos.y; i--) {
+                if (grid.grid[currentPos.x + (i * grid.size)] === Grid.CELLSTATE.weapon) { // weapon encountered
+                    player.equipWeapon(this.getWeaponAt(currentPos.x, i));
+                } else if (grid.stateAt(currentPos.x, i) !== Grid.CELLSTATE.free) { // obstacle or player encountered
+                    if (DEBUG) {
+                        console.log("Player " + player.name + " encountered an obstacle at : " + this.Position.new(currentPos.x, i));
+                    }
+                    nextPos.y = i + 1;
+                    break ;
+                }
+            }
+        } else if (stepy > 0) { // moving down
+            if (DEBUG) {
+                console.log("Player " + player.name + " is moving down");
+            }
+            for (var i = currentPos.y + 1; i <= nextPos.y; i++) {
+                if (grid.stateAt(currentPos.x, i) === Grid.CELLSTATE.weapon) { // weapon encountered
+                    player.equipWeapon(this.getWeaponAt(currentPos.x, i));
+                } else if (grid.stateAt(currentPos.x, i) !== Grid.CELLSTATE.free) { // obstacle or player encountered
+                    if (DEBUG) {
+                        console.log("Player " + player.name + " encountered an obstacle at : " + this.Position.new(currentPos.x, i));
+                    }
+                    nextPos.y = i - 1;
+                    break ;
+                }
+            }
+        }
+        // player position update
+        console.log("Previous selected player position is : " + currentPos);
+        player.setPosition(nextPos.x, nextPos.y);
+        // grid update
+        grid.grid[currentPos.x + (currentPos.y * grid.size)] = Grid.CELLSTATE.free;
+        grid.grid[nextPos.x + (nextPos.y * grid.size)] = Grid.CELLSTATE.player;
+        if (DEBUG) {
+            console.log("After computing selected player position is : " + player.getPosition());
+            console.log("Previous selected player position is : " + currentPos);
+        }
+        return (player);
     }
 };
