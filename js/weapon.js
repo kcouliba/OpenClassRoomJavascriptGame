@@ -5,10 +5,6 @@
 ** Weapon definition
 */
 
-/** Constants values **/
-const DEFAULT_WEAPON_NAME = "Gloves";
-const DEFAULT_DAMAGE = 10;
-
 /*
 ** Weapon Class
 */
@@ -24,8 +20,8 @@ var Weapon = {
     ** @return this
     */
     init: function(name, damage) {
-        this.name = name || DEFAULT_WEAPON_NAME;
-        this.damage = Math.ceil(parseInt(damage)) || DEFAULT_DAMAGE;
+        this.name = name;
+        this.damage = Math.ceil(parseInt(damage));
         console.log("New weapon created : " + this.toString());
         return (this);
     },

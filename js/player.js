@@ -5,33 +5,29 @@
 ** Player definition
 */
 
-/** Constant values */
-const DEFAULT_PLAYER_NAME = "Player";
-const MAX_PLAYER_COUNT = 2;
-const MAX_HP = 100;
-const MAX_MOVE = 3; // How many cells can the player go through
-const ATTACK_STANCE = 0;
-const DEFENSE_STANCE = 1;
-
 /*
 ** Player Class
 */
 var Player = {
     name: "",
-    hp: MAX_HP,
+    hp: 0,
     weapon: null,
-    stance: ATTACK_STANCE,
+    stance: 0,
+    STANCE: {
+        attack: 0,
+        defense: 1
+    },
 
     /*
     ** init
     ** Constructor
     ** @param name : string
-    ** @param firstPlayer : boolean
     ** @return this
     */
-    init: function(name, id) {
-        this.name = name || DEFAULT_PLAYER_NAME + " " + id;
-        this.hp = MAX_HP;
+    init: function(name) {
+        this.name = name;
+        this.hp = 100;
+        this.stance = Player.STANCE.attack;
         if (DEBUG) {
             console.log("New player created : \n\t" + this);
         }
@@ -47,11 +43,7 @@ var Player = {
         var count = 0;
 
         return (function (name) {
-            if (count >= MAX_PLAYER_COUNT) {
-                return (null);
-            }
-            count++;
-            return (Object.create(Player).init(name, count));
+            return (Object.create(Player).init(name));
         });
     })(),
 
@@ -61,10 +53,10 @@ var Player = {
     ** @param : int
     */
     setStance: function(stance) {
-        this.stance = (stance !== ATTACK_STANCE) ? DEFENSE_STANCE : ATTACK_STANCE;
+        this.stance = stance;
         if (DEBUG) {
             console.log("Player " + this.name + " switched stance to "
-                        + ((this.stance === DEFENSE_STANCE) ? "defense" : "attack") + ".");
+                        + ((this.stance === Player.stance.defense) ? "defense" : "attack") + ".");
         }
     },
 
@@ -125,7 +117,7 @@ var Player = {
         if (!this.isAlive()) {
             return (false);
         }
-        this.hp -= (this.stance === DEFENSE_STANCE) 
+        this.hp -= (this.stance === Player.STANCE.defense) 
             ? Math.ceil(damage / 2) : damage;
         this.hp = (this.hp < 0) ? 0 : this.hp;
         if (DEBUG) {

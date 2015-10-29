@@ -5,29 +5,44 @@
 ** Grid definition
 */
 
-/** Constants values **/
-const SIZE = 10;
-const MAX_OBSTACLE_COUNT = (SIZE * SIZE) * .1;
-const FREE = 0; // Free place on the grid
-
 /*
 ** Grid Class
 */
 var Grid = {
-    size: SIZE,
-    obstacles: Math.floor(Math.random() * MAX_OBSTACLE_COUNT), // Count of obstacles on the grid
+    size: 10,
+    obstacles: 0,
     grid: [],
+    CELLSTATE: {
+        free: 0,
+        busy: 1
+    },
     
     /*
     ** init
     ** Constructor
+    ** @param size : int
+    ** @return this : Grid
     */
-    init: function() {
+    init: function(size) {
+        this.size = parseInt(size, 10);
+        this.obstacles = Math.floor(Math.random() * (this.size - 1)); // Count of obstacles on the grid -1 to ease the map generator
         this.grid = generateGrid(this.size, this.obstacles);
         if (DEBUG) {
             console.log("New grid created.");
         }
+        return (this);
     },
+    
+    /* new
+    ** Returns a new generated grid
+    ** @param size : int
+    ** @return grid : Grid
+    */
+    new: (function() {
+        return (function (size) {
+            return (Object.create(Grid).init(size));
+        });
+    })(),
     
     /*
     ** toString
@@ -63,10 +78,10 @@ function generateGrid(size, obstacleCount) {
     
     for (var i = 0; i < cellsCount; i++) {
         row += (i % 10 == 0) ? 1 : 0;
-        if ((Math.round(Math.random() * 100) < 15) && (obstacleCount-- > 0)) {
-            grid.push(1);
+        if ((Math.round(Math.random() * cellsCount) < 15) && (obstacleCount-- > 0)) {
+            grid.push(Grid.CELLSTATE.busy);
         } else {
-            grid.push(0);
+            grid.push(Grid.CELLSTATE.free);
         }
     }
     if (DEBUG) {
