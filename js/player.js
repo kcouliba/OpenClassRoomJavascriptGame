@@ -54,7 +54,7 @@ var Player = {
         this.stance = stance;
         if (DEBUG) {
             console.log("Player " + this.name + " switched stance to "
-                        + ((this.stance === Player.stance.defense) ? "defense" : "attack") + ".");
+                        + ((this.stance === Player.STANCE.defense) ? "defense" : "attack") + ".");
         }
         return (this);
     },
@@ -96,8 +96,8 @@ var Player = {
     */
     attack: function(player) {
         if (DEBUG) {
-            console.log(this.name + " attacks " 
-                        + player.name + " with " + this.weapon + ".");
+            console.log(this.name + " attacks " + player.name 
+                        + " with " + this.weapon.name + " dealing " + this.weapon.damage + ".");
         }
         if (!player.isAlive()) {
             return (false);
@@ -126,6 +126,9 @@ var Player = {
         if (DEBUG) {
             console.log(this.name + " takes " + damage
                         + " damage.\nCurrent hp : " + this.hp + ".");
+            if (this.hp <= 0) {
+                console.log(this.name + " collapsed.");
+            }
         }
         return (true);
     },
