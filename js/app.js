@@ -1,3 +1,6 @@
+/*
+** Entry point
+*/
 (function() {
     /*
     ** Tests grid
@@ -67,98 +70,116 @@
     ]);
 */
 
+    var weaponFactory = {
+        weapons: [
+            Weapon.new(DEFAULT_WEAPON_NAME, DEFAULT_WEAPON_DAMAGE),
+            Weapon.new("Pillow", 3),
+            Weapon.new("Bare hand", 5),
+            Weapon.new("Fork", 8),
+            Weapon.new("Club", 12),
+            Weapon.new("Hover", 14),
+            Weapon.new("Shotgun", 30)
+        ],
+        
+        get: function(count) {
+            var weaponPool = [];
 
-    /*
-    ** Entry point
-    */
-    var weapons = [
-        Weapon.new(DEFAULT_WEAPON_NAME, DEFAULT_WEAPON_DAMAGE),
-        Weapon.new("Bare hand", 5),
-        Weapon.new("Club", 12),
-        Weapon.new("Fork", 8)
-    ];
-    var players = [
-        Player.new(DEFAULT_PLAYER_NAME + "1")
-        .equipWeapon(weapons[1]),
-        Player.new(DEFAULT_PLAYER_NAME + "2")
-        .equipWeapon(weapons[1])
-    ];
+            weaponPool.push(this.weapons[0]);
+            for (var i = count; i > 1; i--) {
+                var rand = Math.floor(Math.random() * 100 * (this.weapons.length - 1) / 100);
 
-    var game = Game.new(Grid.new(SIZE), weapons, players);
+                weaponPool.push(this.weapons[rand]);
+            }
+            return (weaponPool);
+        }
+    };
+    console.log(weaponFactory.get(4));
+    var player1Name = "J";
+    var player2Name = "D";
+    var game = Game.new();
+    var newGame;
 
-    game.init();
-    /*
-    ** TODO
-    ** game loop
-    */
-    //    ...
-    var player1 = game.getPlayer(0);
-    var player2 = game.getPlayer(1);
-    var playing = player2;
-    var waiting = player1;
-    var input = [];
-    var action = "";
-    var winningPhrase = "Congratulations";
-    var losingPhrase = "Too bad";
+    game.start();
+    while (game.running()) {
+        var player1,
+            player2,
+            playing,
+            waiting,
+            action;
+        var input = []; // Look for a better way (form ?)
+        var weapons = weaponFactory.get(MAX_WEAPON_COUNT);
+        var players = [
+            Player.new(player1Name || DEFAULT_PLAYER_NAME + "1")
+            .equipWeapon(weapons[0]),
+            Player.new(player2Name || DEFAULT_PLAYER_NAME + "2")
+            .equipWeapon(weapons[0])
+        ];
 
-    console.log(player2 === playing);
+        game.init(Grid.new(SIZE), weapons, players);
+        player1 = game.getPlayer(0);
+        player2 = game.getPlayer(1);
+        playing = player2;
+        waiting = player1;
 
-    /*
-    ** Enter move mode until players encounters
-    */
-    do {
-        playing = (playing === player1) ? player2 : player1;
-        waiting = (playing === player1) ? player2 : player1;
+        /*
+        ** Enter move mode until players encounters
+        */
         do {
-            input = prompt(playing.name + ", enter move (x, y) : (current position "
-                           + playing.getPosition() + ")");
-        } while (!input);
-        if (input.toLowerCase() === "quit") {
-            return (false);
-        }
-        input = input.trim().split('-');
-        game.movePlayer(playing, parseInt(input[0], 10), parseInt(input[1], 10));
-    } while (!game.playerCollision());
-
-    /*
-    ** Enter fight mode until one player collapses
-    */
-    var turnCount = 0;
-    console.log("FIIIIIIGHHHTTT !!!");
-    do {
-        turnCount++;
-        console.log("Turn : " + turnCount);
-        for (var i = 0; i < 2; i++) {
             playing = (playing === player1) ? player2 : player1;
             waiting = (playing === player1) ? player2 : player1;
-//            input = prompt(playing.name + " ( " + playing.hp + " hp)" + " , enter action (a : attack, d : defense) : ");
-            input = 'a';
-            if (!input) {
+            do {
+                input = prompt(playing.name + ", enter move (x, y) : (current position "
+                               + playing.getPosition() + ")");
+            } while (!input);
+            if (input.toLowerCase() === "quit") {
+                return (false);
+            }
+            input = input.trim().split('-');
+            game.movePlayer(playing, parseInt(input[0], 10), parseInt(input[1], 10));
+        } while (!game.playerCollision());
+
+        /*
+        ** Enter fight mode until one player collapses
+        */
+        var turnCount = 0;
+        console.log("FIIIIIIGHHHTTT !!!");
+        do {
+            turnCount++;
+            console.log("Turn : " + turnCount);
+            for (var i = 0; i < 2; i++) {
+                playing = (playing === player1) ? player2 : player1;
+                waiting = (playing === player1) ? player2 : player1;
+                //            input = prompt(playing.name + " ( " + playing.hp + " hp)" + " , enter action (a : attack, d : defense) : ");
                 input = 'a';
+                if (!input) {
+                    input = 'a';
+                }
+                input = input.trim().toLowerCase();
+                playing.setStance((input === 'a') ? Player.STANCE.attack : Player.STANCE.defense);
             }
-            input = input.trim().toLowerCase();
-            playing.setStance((input === 'a') ? Player.STANCE.attack : Player.STANCE.defense);
-        }
-        for (var i = 0; i < 2; i++) {
-            playing = (playing === player1) ? player2 : player1;
-            waiting = (playing === player1) ? player2 : player1;
-            if ((playing.stance === Player.STANCE.attack) && playing.isAlive()) {
-                playing.attack(waiting);
+            for (var i = 0; i < 2; i++) {
+                playing = (playing === player1) ? player2 : player1;
+                waiting = (playing === player1) ? player2 : player1;
+                if ((playing.stance === Player.STANCE.attack) && playing.isAlive()) {
+                    playing.attack(waiting);
+                }
+                playing.setStance(Player.STANCE.attack);
             }
-            playing.setStance(Player.STANCE.attack);
+        } while (player1.isAlive() && player2.isAlive());
+
+        /*
+        ** Announce the winner
+        */
+        if (player1.isAlive()) {
+            console.log(getWinningPhrase(player1));
+            console.log("Better luck next time : " + player2.name);
+        } else {
+            console.log(getWinningPhrase(player2));
+            console.log("Better luck next time : " + player1.name);
         }
-    } while (player1.isAlive() && player2.isAlive());
-
-    /*
-    ** Announce the winner
-    */
-
-    if (player1.isAlive()) {
-        console.log(getWinningPhrase(player1));
-        console.log("Better luck next time : " + player2.name);
-    } else {
-        console.log(getWinningPhrase(player2));
-        console.log("Better luck next time : " + player1.name);
+        if ((newGame = prompt("New game ? (Y / N)") || 'N').toUpperCase() === 'N') {
+            game.stop();
+        }
     }
 
     /*
