@@ -1,125 +1,148 @@
-include("constants");
-include("grid");
-include("weapon");
-include("player");
-include("scripts");
-include("tests");
-
-function include(jsfile) {
-    var script = document.createElement("script");
-    
-    script.setAttribute("src", "../js/" + jsfile + ".js");
-    script.setAttribute("type", "text/javascript");
-    document.getElementsByTagName("body")[0].appendChild(script);
-}
-
 /*
-** Entry point
+** game.js
+** Author coulibaly.d.kevin@gmail.com
+** Date 29/10/2015
+** A game class
 */
-(function() {
-    
-})();
 
+var Game = {
+    grid: null,
+    weapons: [],
+    players: [],
 
-/*
+    // Sub class Position
+    Position: {
+        x: 0,
+        y: 0,
 
+        new: function(x, y) {
+            var self = Object.create(this);
 
+            self.x = x;
+            self.y = y;
+            return (self);
+        },
 
-var dTest = (function(token) {
-    
-    function Player(name) {
-        this.id = 0;
-    }
-    
-    var p = new Player();
-    
-    document.addEventListener("click", function(e) {
-        for (var i = 0; i < 10; i++) {
-            console.log(i);
+        toString: function () {
+            return ("(" + this.x + ", " + this.y + ")");
         }
-    });
-    
-    document.addEventListener("keyup", function(e) {
-        p.id++;
-        switch (e.which) {
-            case 37:
-                console.log("left : " + e.which);
-                break;
-            default:
-                console.log("???");
-                break;
-        }
-        console.log("pid : " + p.id);
-    });
-    
-    return function(name, token) {
-        if (token === 12345) {
-            console.log(name);
-            return;
-        }
-        console.log("No way");
-    };
-})(12345);
+    },
 
+    // Sub class of a game element with element position
+    Element: {
+        position: null,
 
-var safeEnv = true;
-var $_imports = { };
-var test = [];
-var body = document.getElementsByTagName("body")[0];
+        setPosition: function (x, y) {
+            this.position.x = x;
+            this.position.y = y;
+            return (this);
+        },
 
-function register(name, f) {
-    console.log(f);
-    var ft = f;
-    $_imports[name] = 0;
-    test.push(ft);
-}
+        getPosition: function () {
+            return (this.position);
+        },
 
-function require(name) {
-    if (!safeEnv) {
-        return (null);
-    }
-    return ($_imports[name]);
-}
+        new: function(object) {
+            var self = Object.create(this);
 
-register("abc", function() { return 5; });
-register("al", alert);
-
-if (typeof myGame !== "undefined") {
-    console.log("Can't launch, another namespace with \"myGame\" is defined.");
-    safeEnv = false;
-} else {
-    window.myGame = {
-        version: "0.0.1"
-    };
-}
-
-if (typeof myGame !== "undefined") {
-    console.log("Can't launch, another namespace with \"myGame\" is defined.");
-    safeEnv = false;
-} else {
-    
-    (function() {
-        var env = {
-            import: {}
-        }
-
-        var Map = (function() {
-            function Map() {
-                this.size = 10,
-
-                this.showSize = function() {
-                    return (this.size);
-                }
+            for (attr in object) {
+                self[attr] = object[attr];
             }
+            self.position = Game.Position.new(0, 0);
+            return (self);
+        }
+    },
 
-            return Map;
-        })();
+    /*
+    ** init
+    ** Initializes a game
+    */
+    init: function() {
+        this.placeElements();
+        return (this);
+    },
 
-        env.import.Map = Map;
+    /*
+    ** new
+    ** Returns a new Game instance
+    ** @param grid : Grid object
+    ** @param weapons : Weapon Array
+    ** @param players : Player Array
+    ** @return this : Game instance
+    */
+    new: function(grid, weapons, players) {
+        var self = Object.create(this);
+        
+        self.grid = grid;
+        for (var i = 0; i < weapons.length; i++) {
+            self.weapons.push(this.Element.new(weapons[i]));
+        }
+        for (var i = 0; i < players.length; i++) {
+            self.players.push(this.Element.new(players[i]));
+        }
+        if (DEBUG) {
+            console.log("A new game has been created.");
+        }
+        return (self);
+    },
+    
+    /*
+    ** placeElements
+    ** Places elements on grid
+    ** @return this : Game instance
+    */
+    placeElements: function() {
+        this.placePlayers();
+//        this.placeWeapons();
+        return (this);
+    },
 
-        (function($){
-            var map = new $.import.Map();
-            console.log(map.showSize());
-        })(env);
-    })();
-}*/
+    /*
+    ** placePlayers
+    ** Places players on grid
+    ** @return this : Game instance
+    */
+    placePlayers: function() {
+        // Place player1
+        for (var i = 0; i < Math.floor(this.grid.size / 2); i++) {
+            var placed = false;
+
+            for (var j = 0; j < Math.floor(this.grid.size / 2); j++) {
+                if (this.grid.grid[i + (j * this.grid.size)] === Grid.CELLSTATE.free) {
+                    this.grid.grid[i + (j * this.grid.size)] = Grid.CELLSTATE.player;
+                    this.players[0].setPosition(i, j);
+                    placed = true;
+                    break ;
+                }                
+            }
+            if (placed) {
+                if (DEBUG) {
+//                    console.log(this.players[0]);
+                    console.log(this.players[0] + ", placed at position " + this.players[0].getPosition());
+                }
+                break ;
+            }
+        }
+        // Place player2
+        for (var i = this.grid.size - 1; i > Math.floor(this.grid.size / 2); i--) {
+            var placed = false;
+
+            for (var j = this.grid.size - 1; j > Math.floor(this.grid.size / 2); j--) {
+                if (this.grid.grid[i + (j * this.grid.size)] === Grid.CELLSTATE.free) {
+                    this.grid.grid[i + (j * this.grid.size)] = Grid.CELLSTATE.player;
+                    this.players[1].setPosition(i, j);
+                    placed = true;
+                    break ;
+                }                
+            }
+            if (placed) {
+                if (DEBUG) {
+                    console.log(this.players[1]);
+                    console.log(this.players[1] + ", placed at position " + this.players[1].getPosition());
+                }
+                break ;
+            }
+        }
+        return (this);
+    }
+};
