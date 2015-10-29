@@ -39,9 +39,7 @@ var Player = {
     ** @param name : string (optional)
     ** @return a new instance of Player
     */
-    _new: (function() {
-        var count = 0;
-
+    new: (function() {
         return (function (name) {
             return (Object.create(Player).init(name));
         });
