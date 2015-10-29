@@ -1,4 +1,9 @@
-const DEBUG = true;
+include("constants");
+include("grid");
+include("weapon");
+include("player");
+include("scripts");
+include("tests");
 
 function include(jsfile) {
     var script = document.createElement("script");
@@ -8,11 +13,12 @@ function include(jsfile) {
     document.getElementsByTagName("body")[0].appendChild(script);
 }
 
-include("grid");
-include("weapon");
-include("player");
-include("scripts");
-include("tests");
+/*
+** Entry point
+*/
+(function() {
+    
+})();
 
 
 /*
