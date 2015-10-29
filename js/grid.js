@@ -1,7 +1,7 @@
 /*
 ** grid.js
 ** Author coulibaly.d.kevin@gmail.com
-** Date 23/10/2015
+** Date 29/10/2015
 ** Grid definition
 */
 
@@ -20,19 +20,15 @@ var Grid = {
     },
     
     /*
-    ** init
-    ** Constructor
-    ** @param size : int
-    ** @return this : Grid
+    ** stateAt
+    ** Returns the cell state at coords
+    ** @param x : int
+    ** @param y : int
+    ** @return CELLSTATE : int
     */
-    init: function(size) {
-        this.size = parseInt(size, 10);
-        this.obstacles = Math.floor(Math.random() * (this.size - 1)); // Count of obstacles on the grid -1 to ease the map generator
-        this.grid = generateGrid(this.size, this.obstacles);
-        if (DEBUG) {
-            console.log("New grid created.");
-        }
-        return (this);
+    stateAt: function(x, y) {
+        console.log("State at (" + x + ", " + y + ") = " + this.grid[x + (y * this.size)]);
+        return (this.grid[x + (y * this.size)]);
     },
     
     /* new
@@ -40,11 +36,18 @@ var Grid = {
     ** @param size : int
     ** @return grid : Grid
     */
-    new: (function() {
-        return (function (size) {
-            return (Object.create(Grid).init(size));
-        });
-    })(),
+    new: function (size) {
+        var self = Object.create(this);
+        
+        self.size = parseInt(size, 10);
+        self.obstacles = Math.floor(Math.random() * (self.size - 1)); // Count of obstacles on the grid -1 to ease the map generator
+        self.grid = generateGrid(self.size, self.obstacles);
+        if (DEBUG) {
+            console.log("New grid created.");
+            console.log(self);
+        }
+        return (self);
+    },
     
     /*
     ** toString
@@ -52,17 +55,7 @@ var Grid = {
     ** @return String
     */
     toString: function() {
-        var grid = "";
-        
-        for (var i = 0; i < this.size; i++) {
-            var line = "";
-            for (var j = 0; j < this.size; j++) {
-                line += this.grid[i * this.size + j]
-            }
-            line.trim();
-            grid += line + "\n";
-        }
-        return (grid);
+        return ("Grid with dimension " + this.size + " x " + this.size);
     }
 };
 
