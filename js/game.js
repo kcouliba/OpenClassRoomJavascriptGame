@@ -75,6 +75,10 @@ var Game = {
     /*
     ** init
     ** Initializes a game
+    ** @param grid : Grid object
+    ** @param weapons : Weapon Array
+    ** @param players : Player Array
+    ** @return this : Game instance
     */
     init: function(grid, weapons, players) {
         this.grid = grid;
@@ -106,21 +110,9 @@ var Game = {
     /*
     ** new
     ** Returns a new Game instance
-    ** @param grid : Grid object
-    ** @param weapons : Weapon Array
-    ** @param players : Player Array
     ** @return this : Game instance
     */
-    new: function(/*grid, weapons, players*/) {
-//        var self = Object.create(this);
-        
-//        self.grid = grid;
-//        for (var i = 0; i < weapons.length; i++) {
-//            self.weapons.push(this.Element.new(weapons[i]));
-//        }
-//        for (var i = 0; i < players.length; i++) {
-//            self.players.push(this.Element.new(players[i]));
-//        }
+    new: function() {
         if (DEBUG) {
             console.log("A new game has been created.");
         }

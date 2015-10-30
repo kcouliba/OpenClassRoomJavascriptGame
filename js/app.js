@@ -1,75 +1,11 @@
 /*
 ** Entry point
 */
-(function() {
-    /*
-    ** Tests grid
-    */
-    /*
-    var testGrids = [];
-
-    testGrids.push([
-        0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0,
-        0,0,0,0,0,0,0,0,0,0
-    ]);
-    testGrids.push([
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0
-    ]);
-    testGrids.push([
-        0,0,0,0,0,0,0,0,0,0,
-        1,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0
-    ]);
-    testGrids.push([
-        0,1,0,0,0,0,0,0,0,0,
-        1,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,1,
-        0,0,1,0,0,0,0,0,1,0
-    ]);
-    testGrids.push([
-        3,3,3,0,0,0,0,0,0,0,
-        3,3,3,0,0,0,0,0,0,0,
-        3,3,3,0,0,0,0,0,0,0,
-        3,3,3,0,0,0,0,0,0,0,
-        3,3,3,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,0,0,0,0,
-        0,0,1,0,0,0,3,3,3,3,
-        0,0,1,0,0,0,3,3,3,3,
-        0,0,1,0,0,0,3,3,3,3,
-        0,0,1,0,0,0,3,3,3,3
-    ]);
+/*
+** TODO
+** replace prompt logic by ui data harvest
 */
-
+(function() {
     var weaponFactory = {
         weapons: [
             Weapon.new(DEFAULT_WEAPON_NAME, DEFAULT_WEAPON_DAMAGE),
@@ -106,7 +42,8 @@
             playing,
             waiting,
             action;
-        var input = []; // Look for a better way (form ?)
+        var input = []; // Look for a better way (form ?) ux_ui
+        var turnCount = 0;
         var weapons = weaponFactory.get(MAX_WEAPON_COUNT);
         var players = [
             Player.new(player1Name || DEFAULT_PLAYER_NAME + "1")
@@ -139,9 +76,9 @@
         } while (!game.playerCollision());
 
         /*
-        ** Enter fight mode until one player collapses
+        ** Enter fight mode until one player faints
         */
-        var turnCount = 0;
+        turnCount = 0;
         console.log("FIIIIIIGHHHTTT !!!");
         do {
             turnCount++;
@@ -172,10 +109,10 @@
         */
         if (player1.isAlive()) {
             console.log(getWinningPhrase(player1));
-            console.log("Better luck next time : " + player2.name);
+            console.log("Better luck next time " + player2.name);
         } else {
             console.log(getWinningPhrase(player2));
-            console.log("Better luck next time : " + player1.name);
+            console.log("Better luck next time "  + player1.name);
         }
         if ((newGame = prompt("New game ? (Y / N)") || 'N').toUpperCase() === 'N') {
             game.stop();
@@ -186,7 +123,6 @@
     ** Tests
     */
     //    gameClassInitTests(game);
-    //    gameClassPlayerMoveTests(game);
 })();
 
 /*
@@ -215,15 +151,6 @@ function gameClassInitTests(game) {
         return (count);
     })
         .runAll();
-}
-
-
-/*
-** gameClassPlayerMoveTests
-** Runs tests on Game class
-*/
-function gameClassPlayerMoveTests(game) {
-
 }
 
 function getWinningPhrase(player) {
@@ -257,107 +184,3 @@ document.getElementsByTagName('div')[0].addEventListener('click', function() {
 
 document.dispatchEvent(ev);
 */
-
-
-/*
-
-
-
-var dTest = (function(token) {
-
-    function Player(name) {
-        this.id = 0;
-    }
-
-    var p = new Player();
-
-    document.addEventListener("click", function(e) {
-        for (var i = 0; i < 10; i++) {
-            console.log(i);
-        }
-    });
-
-    document.addEventListener("keyup", function(e) {
-        p.id++;
-        switch (e.which) {
-            case 37:
-                console.log("left : " + e.which);
-                break;
-            default:
-                console.log("???");
-                break;
-        }
-        console.log("pid : " + p.id);
-    });
-
-    return function(name, token) {
-        if (token === 12345) {
-            console.log(name);
-            return;
-        }
-        console.log("No way");
-    };
-})(12345);
-
-
-var safeEnv = true;
-var $_imports = { };
-var test = [];
-var body = document.getElementsByTagName("body")[0];
-
-function register(name, f) {
-    console.log(f);
-    var ft = f;
-    $_imports[name] = 0;
-    test.push(ft);
-}
-
-function require(name) {
-    if (!safeEnv) {
-        return (null);
-    }
-    return ($_imports[name]);
-}
-
-register("abc", function() { return 5; });
-register("al", alert);
-
-if (typeof myGame !== "undefined") {
-    console.log("Can't launch, another namespace with \"myGame\" is defined.");
-    safeEnv = false;
-} else {
-    window.myGame = {
-        version: "0.0.1"
-    };
-}
-
-if (typeof myGame !== "undefined") {
-    console.log("Can't launch, another namespace with \"myGame\" is defined.");
-    safeEnv = false;
-} else {
-
-    (function() {
-        var env = {
-            import: {}
-        }
-
-        var Map = (function() {
-            function Map() {
-                this.size = 10,
-
-                this.showSize = function() {
-                    return (this.size);
-                }
-            }
-
-            return Map;
-        })();
-
-        env.import.Map = Map;
-
-        (function($){
-            var map = new $.import.Map();
-            console.log(map.showSize());
-        })(env);
-    })();
-}*/

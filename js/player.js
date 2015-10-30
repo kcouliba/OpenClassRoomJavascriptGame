@@ -127,7 +127,7 @@ var Player = {
             console.log(this.name + " takes " + damage
                         + " damage.\nCurrent hp : " + this.hp + ".");
             if (this.hp <= 0) {
-                console.log(this.name + " collapsed.");
+                console.log(this.name + " fainted.");
             }
         }
         return (true);
