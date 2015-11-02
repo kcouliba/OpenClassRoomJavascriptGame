@@ -4,80 +4,84 @@
         <meta lang="fr" charset="utf-8" />
         <link rel="stylesheet" href="../css/bootstrap.css" type="text/css" />
         <link rel="stylesheet" href="../css/index.css" type="text/css" />
-        
+
         <title>Let's play</title>
     </head>
     <body>
-        <div class="container">
+        <header class="container">
             <div class="row">
-                <h1 class="page-header">Let's do a great game !!!</h1>
-                <blockquote>
-                    <small class="pull-right">That' what he said</small>
-                </blockquote>
+                <h1 class="page-header">Board game</h1>
             </div>
-            <div class="row">
-                <p class="col-lg-4">Ok my only duty is related on the html section</p>
-                <p class="col-lg-8">So now I'm working here</p>
-            </div>
-            <div class="row">
-                <p class="col-lg-3">I'm still here</p>
-                <p class="col-lg-3">Again ...</p>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6">6 colonnes
-                    <div class="row">
-                        <div class="col-lg-4">4 colonnes</div>
-                        <div class="col-lg-offset-4 col-lg-4">4 colonnes</div>
-                    </div>
-                </div>
-                <div class="col-lg-6">6 colonnes
-                    <div class="row">
-                        <div class="col-lg-4">4 colonnes</div>
-                        <div class="col-lg-8">8 colonnes</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <section class="row">
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t1.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t2.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t3.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t4.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t5.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t6.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t7.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t8.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t9.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t10.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t11.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t12.jpg" alt="Tigre"></div>
+        </header>
+        <section id="mainSection" class="container">
+            <section id="graphicInterface">
+                
             </section>
-        </div>
-        <div class="container">
-            <header class="row">
-                <div class="col-lg-12">Entête</div>
-            </header>
-            <div class="row">
-                <div class="col-lg-2">
-                    <div class="row">
-                        <aside class="col-lg-12">Aside</aside>
-                        <aside class="col-lg-12">Aside</aside>
+            <aside id="controlInterface">
+                <section id="playerStatuses">
+                    <div id="player1Status">
+                        <ul>
+                            <li class="player1Name">Player 1 Name</li>
+                            <li>HP : <span id="player1HP"></span></li>
+                        </ul>
+                        <ul class="playerWeapon">
+                            <li><img id="player1WeaponImage" /></li>
+                            <li>Weapon : <span id="player1WeaponName"></span></li>
+                            <li>Damage : <span id="player1WeaponDamage"></span></li>
+                        </ul>
                     </div>
-                </div>
-                <section class="col-lg-8">Section</section>
-                <div class="col-lg-2">
-                    <div class="row">
-                        <aside class="col-lg-12">Aside</aside>
-                        <aside class="col-lg-12">Aside</aside>
+                    <div id="player2Status">
+                        <ul>
+                            <li class="player2Name">Player 2 Name</li>
+                            <li>HP : <span id="player1HP"></span></li>
+                        </ul>
+                        <ul class="playerWeapon">
+                            <li><img id="player2WeaponImage" /></li>
+                            <li>Weapon : <span id="player2WeaponName"></span></li>
+                            <li>Damage : <span id="player2WeaponDamage"></span></li>
+                        </ul>
                     </div>
-                </div>
-            </div>
-            <footer class="row">
-                <div class="col-lg-12">Pied de page</div>
-            </footer>
-        </div>
+                </section>
+                <section id="currentPlayerMoveControl">
+                    <p id="currentPlayerName">Current player</p>
+                    <div class="currentPlayerDirection">
+                        Direction :
+                        <select>
+                            <option id="currentPlayerMoveUp">Up</option>
+                            <option id="currentPlayerMoveDown">Down</option>
+                            <option id="currentPlayerMoveLeft">Left</option>
+                            <option id="currentPlayerMoveRight">Right</option>
+                        </select>
+                    </div>
+                    <div class="currentPlayerStep">
+                        Step(s) :
+                        <input type="number" min="1" max="3" value="1" />
+                    </div>
+                    <button id="currentPlayerActionMove">Move</button>
+                </section>
+                <section id="playerBattleControl">
+                    <p class="player1Name">Player 1</p>
+                    <div id="player1BattleAction">
+                        Action : 
+                        <label>Attack</label>
+                        <input type="radio" name="player1BattleAction" value="Attack" checked />
+                        <label>Defend</label>
+                        <input type="radio" name="player1BattleAction" value="Defend" />
+                    </div>
+                    <p class="player2Name">Player 2</p>
+                    <div id="player2BattleAction">
+                        Action : 
+                        <label>Attack</label>
+                        <input type="radio" name="player2BattleAction" value="Attack" checked />
+                        <label>Defend</label>
+                        <input type="radio" name="player2BattleAction" value="Defend" />
+                    </div>
+                    <button id="playerBattleActionEngage">FIGHT !</button>
+                </section>
+            </aside>
+        </section>
+        <footer class="row">
+
+        </footer>
     </body>
 </html>
