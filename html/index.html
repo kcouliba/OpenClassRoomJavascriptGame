@@ -15,73 +15,156 @@
         </header>
         <section id="mainSection" class="container">
             <section id="graphicInterface">
-                
+
             </section>
             <aside id="controlInterface">
                 <section id="playerStatuses">
-                    <div id="player1Status">
-                        <ul>
-                            <li class="player1Name">Player 1 Name</li>
-                            <li>HP : <span id="player1HP"></span></li>
-                        </ul>
-                        <ul class="playerWeapon">
-                            <li><img id="player1WeaponImage" /></li>
-                            <li>Weapon : <span id="player1WeaponName"></span></li>
-                            <li>Damage : <span id="player1WeaponDamage"></span></li>
-                        </ul>
-                    </div>
-                    <div id="player2Status">
-                        <ul>
-                            <li class="player2Name">Player 2 Name</li>
-                            <li>HP : <span id="player1HP"></span></li>
-                        </ul>
-                        <ul class="playerWeapon">
-                            <li><img id="player2WeaponImage" /></li>
-                            <li>Weapon : <span id="player2WeaponName"></span></li>
-                            <li>Damage : <span id="player2WeaponDamage"></span></li>
-                        </ul>
-                    </div>
-                </section>
-                <section id="currentPlayerMoveControl">
-                    <p id="currentPlayerName">Current player</p>
-                    <div class="currentPlayerDirection">
-                        Direction :
-                        <select>
-                            <option id="currentPlayerMoveUp">Up</option>
-                            <option id="currentPlayerMoveDown">Down</option>
-                            <option id="currentPlayerMoveLeft">Left</option>
-                            <option id="currentPlayerMoveRight">Right</option>
-                        </select>
-                    </div>
-                    <div class="currentPlayerStep">
-                        Step(s) :
-                        <input type="number" min="1" max="3" value="1" />
-                    </div>
-                    <button id="currentPlayerActionMove">Move</button>
-                </section>
-                <section id="playerBattleControl">
-                    <p class="player1Name">Player 1</p>
-                    <div id="player1BattleAction">
-                        Action : 
-                        <label>Attack</label>
-                        <input type="radio" name="player1BattleAction" value="Attack" checked />
-                        <label>Defend</label>
-                        <input type="radio" name="player1BattleAction" value="Defend" />
-                    </div>
-                    <p class="player2Name">Player 2</p>
-                    <div id="player2BattleAction">
-                        Action : 
-                        <label>Attack</label>
-                        <input type="radio" name="player2BattleAction" value="Attack" checked />
-                        <label>Defend</label>
-                        <input type="radio" name="player2BattleAction" value="Defend" />
-                    </div>
-                    <button id="playerBattleActionEngage">FIGHT !</button>
-                </section>
-            </aside>
-        </section>
-        <footer class="row">
+                    <section id="player1">
+                        <section id="Status">
+                            <ul>
+                                <li class="playerName">Player 1 Name</li>
+                                <li>HP : <span id="playerHP"></span></li>
+                            </ul>
+                            <ul class="playerWeapon">
+                                <li><img id="playerWeaponImage" /></li>
+                                <li>Weapon : <span id="playerWeaponName"></span></li>
+                                <li>Damage : <span id="playerWeaponDamage"></span></li>
+                            </ul>
+                        </section>
+                        <section id="playerMove">
+                            <div class="currentPlayerDirection">
+                                Direction :
+                                <select>
+                                    <option id="currentPlayerMoveUp">Up</option>
+                                    <option id="currentPlayerMoveDown">Down</option>
+                                    <option id="currentPlayerMoveLeft">Left</option>
+                                    <option id="currentPlayerMoveRight">Right</option>
+                                </select>
+                            </div>
+                            <div class="currentPlayerStep">
+                                Step(s) :
+                                <input type="number" min="1" max="3" value="1" />
+                            </div>
+                            <button id="currentPlayerActionMove">Move</button>
+                        </section>
+                        <section id="playerBattleControl">
+                            <div id="playerBattleAction">
+                                Action : 
+                                <label>Attack</label>
+                                <input type="radio" name="playerBattleAction" value="Attack" checked />
+                                <label>Defend</label>
+                                <input type="radio" name="playerBattleAction" value="Defend" />
+                            </div>
+                            <button id="playerBattleActionEngage">FIGHT !</button>
+                        </section>
+                    </section>
+                    <section id="Player2">
+                        <section id="Status">
+                            <ul>
+                                <li class="playerName">Player 2 Name</li>
+                                <li>HP : <span id="playerHP"></span></li>
+                            </ul>
+                            <ul class="playerWeapon">
+                                <li><img id="playerWeaponImage" /></li>
+                                <li>Weapon : <span id="playerWeaponName"></span></li>
+                                <li>Damage : <span id="playerWeaponDamage"></span></li>
+                            </ul>
+                        </section>
+                        <section id="playerMove">
+                            <div class="currentPlayerDirection">
+                                Direction :
+                                <select>
+                                    <option id="currentPlayerMoveUp">Up</option>
+                                    <option id="currentPlayerMoveDown">Down</option>
+                                    <option id="currentPlayerMoveLeft">Left</option>
+                                    <option id="currentPlayerMoveRight">Right</option>
+                                </select>
+                            </div>
+                            <div class="currentPlayerStep">
+                                Step(s) :
+                                <input type="number" min="1" max="3" value="1" />
+                            </div>
+                            <button id="currentPlayerActionMove">Move</button>
+                        </section>
+                        <section id="playerBattleControl">
+                            <div id="player1BattleAction">
+                                Action : 
+                                <label>Attack</label>
+                                <input type="radio" name="player1BattleAction" value="Attack" checked />
+                                <label>Defend</label>
+                                <input type="radio" name="player1BattleAction" value="Defend" />
+                            </div>
+                            <button id="playerBattleActionEngage">FIGHT !</button>
+                        </section>
+                    </section>
 
-        </footer>
-    </body>
-</html>
+
+
+                    <!--
+<div id="player1Status">
+<ul>
+<li class="player1Name">Player 1 Name</li>
+<li>HP : <span id="player1HP"></span></li>
+</ul>
+<ul class="playerWeapon">
+<li><img id="player1WeaponImage" /></li>
+<li>Weapon : <span id="player1WeaponName"></span></li>
+<li>Damage : <span id="player1WeaponDamage"></span></li>
+</ul>
+</div>
+<div id="player2Status">
+<ul>
+<li class="player2Name">Player 2 Name</li>
+<li>HP : <span id="player1HP"></span></li>
+</ul>
+<ul class="playerWeapon">
+<li><img id="player2WeaponImage" /></li>
+<li>Weapon : <span id="player2WeaponName"></span></li>
+<li>Damage : <span id="player2WeaponDamage"></span></li>
+</ul>
+</div>
+</section>
+<section id="currentPlayerMoveControl">
+<p id="currentPlayerName">Current player</p>
+<div class="currentPlayerDirection">
+Direction :
+<select>
+<option id="currentPlayerMoveUp">Up</option>
+<option id="currentPlayerMoveDown">Down</option>
+<option id="currentPlayerMoveLeft">Left</option>
+<option id="currentPlayerMoveRight">Right</option>
+</select>
+</div>
+<div class="currentPlayerStep">
+Step(s) :
+<input type="number" min="1" max="3" value="1" />
+</div>
+<button id="currentPlayerActionMove">Move</button>
+</section>
+<section id="playerBattleControl">
+<p class="player1Name">Player 1</p>
+<div id="player1BattleAction">
+Action : 
+<label>Attack</label>
+<input type="radio" name="player1BattleAction" value="Attack" checked />
+<label>Defend</label>
+<input type="radio" name="player1BattleAction" value="Defend" />
+</div>
+<p class="player2Name">Player 2</p>
+<div id="player2BattleAction">
+Action : 
+<label>Attack</label>
+<input type="radio" name="player2BattleAction" value="Attack" checked />
+<label>Defend</label>
+<input type="radio" name="player2BattleAction" value="Defend" />
+</div>
+<button id="playerBattleActionEngage">FIGHT !</button>
+</section>
+-->
+                    </aside>
+                </section>
+            <footer class="row">
+
+            </footer>
+            </body>
+        </html>
