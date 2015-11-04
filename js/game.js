@@ -6,10 +6,15 @@
 */
 
 var Game = {
+    GAMEPHASE : {
+        MOVE: 0,
+        BATTLE: 1
+    },
     run: false,
     grid: null,
     weapons: [],
     players: [],
+    gamePhase: null,
 
     // Sub class Position
     Position: {
@@ -81,6 +86,8 @@ var Game = {
     ** @return this : Game instance
     */
     init: function(grid, weapons, players) {
+        this.weapons = [];
+        this.players = [];
         this.grid = grid;
         for (var i = 0; i < weapons.length; i++) {
             this.weapons.push(this.Element.new(weapons[i]));
@@ -89,14 +96,18 @@ var Game = {
             this.players.push(this.Element.new(players[i]));
         }
         this.placeElements();
+        gamePhase = Game.GAMEPHASE.MOVE;
         if (DEBUG) {
-            console.log("Game starts.");
+            console.log("Game initialized.");
         }
         return (this);
     },
     
     start: function() {
         this.run = true;
+        if (DEBUG) {
+            console.log("Game started.");
+        }
     },
     
     running: function() {
@@ -105,6 +116,9 @@ var Game = {
     
     stop: function() {
         this.run = false;
+        if (DEBUG) {
+            console.log("Game stopped.");
+        }
     },
 
     /*
@@ -297,6 +311,7 @@ var Game = {
         gap.y = Math.abs(gap.y);
         console.log("Players gap : " + gap);
         if ((gap.x <= 1) && (gap.y <= 1)) {
+            gamePhase = Game.GAMEPHASE.BATTLE;
             return (true);
         }
         return (false);
