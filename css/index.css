@@ -19,6 +19,10 @@
     
 }*/
 
+#renderingSurface {
+    border: 1px solid black;
+}
+
 img[class*="thumbnail"] {
     width: 64px;
     height: 64px;
