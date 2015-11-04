@@ -1,11 +1,17 @@
 /*
-** Entry point
-*/
-/*
 ** TODO
-** replace prompt logic by ui data harvest
+** replace prompt logic by ui data harvest (DONE)
 */
-(function() {
+
+/*
+** IIFE will return an object containing funtions needed to run the game properly
+** without granting access to datas
+*/
+var app = (function() {
+
+    // Game initialization
+    
+    // WeaponFactory
     var weaponFactory = {
         weapons: [
             Weapon.new(DEFAULT_WEAPON_NAME, DEFAULT_WEAPON_DAMAGE),
@@ -16,7 +22,13 @@
             Weapon.new("Hover", 14),
             Weapon.new("Shotgun", 30)
         ],
-        
+
+        /*
+        ** get
+        ** returns an array containing weapons
+        ** @param count : int
+        ** @return weaponPool : weaponArray
+        */
         get: function(count) {
             var weaponPool = [];
 
@@ -29,143 +41,148 @@
             return (weaponPool);
         }
     };
-    console.log(weaponFactory.get(4));
-    var player1Name = "J";
-    var player2Name = "D";
+    
+    var GamePlayer = {
+        id: 0,
+        name: "",
+        hp: "",
+        weaponName: "",
+        weaponDamage: "",
+        
+        init: function(name, hp, wName, wDamage) {
+            this.name = name;
+            this.hp = hp;
+            this.weaponName = wName;
+            this.weaponDamage = wDamage;
+        }
+    };
+    
+    // Game mandatory variables
     var game = Game.new();
-    var newGame;
+    var player1, player2;
+    var player1Data = Object.create(GamePlayer);
+    var player2Data = Object.create(GamePlayer);
+    
+    player1Data.id = 0;
+    player2Data.id = 1;
+    
+    function updatePlayerData(playerId, player) {
+        var playerData = (playerId === 0) ? player1Data : player2Data;
+        
+        playerData.init(player.name, player.hp, player.weapon.name, player.weapon.damage);
+    }
 
-    game.start();
-    while (game.running()) {
-        var player1,
-            player2,
-            playing,
-            waiting,
-            action;
-        var input = []; // Look for a better way (form ?) ux_ui
-        var turnCount = 0;
-        var weapons = weaponFactory.get(MAX_WEAPON_COUNT);
-        var players = [
-            Player.new(player1Name || DEFAULT_PLAYER_NAME + "1")
-            .equipWeapon(weapons[0]),
-            Player.new(player2Name || DEFAULT_PLAYER_NAME + "2")
-            .equipWeapon(weapons[0])
-        ];
-
-        game.init(Grid.new(SIZE), weapons, players);
-        player1 = game.getPlayer(0);
-        player2 = game.getPlayer(1);
-        playing = player2;
-        waiting = player1;
+    return ({
+        newGame: function(player1Name, player2Name) {
+            if (game.running()) {
+                game.stop();
+            }
+            var weapons = weaponFactory.get(MAX_WEAPON_COUNT);
+            var players = [
+                Player.new(player1Name || DEFAULT_PLAYER_NAME + "1")
+                .equipWeapon(weapons[0]),
+                Player.new(player2Name || DEFAULT_PLAYER_NAME + "2")
+                .equipWeapon(weapons[0])
+            ];
+            
+            game.init(Grid.new(SIZE), weapons, players);
+            updatePlayerData(0, game.getPlayer(0));
+            updatePlayerData(1, game.getPlayer(1));
+            game.start();
+            return ([player1Data, player2Data]);
+        },
 
         /*
-        ** Enter move mode until players encounters
+        ** TODO : create a check method game.isValidMove(player, stepX, stepY)
+        ** That funtion will check if the player will encounter an obstacle
+        ** weapon pick up will be done in function movePlayer()
         */
-        do {
-            playing = (playing === player1) ? player2 : player1;
-            waiting = (playing === player1) ? player2 : player1;
-            do {
-                input = prompt(playing.name + ", enter move (x, y) : (current position "
-                               + playing.getPosition() + ")");
-            } while (!input);
-            if (input.toLowerCase() === "quit") {
+        playerMove: function(playerId, stepX, stepY) {
+            if (!game.running()) {
                 return (false);
             }
-            input = input.trim().split('-');
-            game.movePlayer(playing, parseInt(input[0], 10), parseInt(input[1], 10));
-        } while (!game.playerCollision());
-
-        /*
-        ** Enter fight mode until one player faints
-        */
-        turnCount = 0;
-        console.log("FIIIIIIGHHHTTT !!!");
-        do {
-            turnCount++;
-            console.log("Turn : " + turnCount);
-            for (var i = 0; i < 2; i++) {
-                playing = (playing === player1) ? player2 : player1;
-                waiting = (playing === player1) ? player2 : player1;
-                //            input = prompt(playing.name + " ( " + playing.hp + " hp)" + " , enter action (a : attack, d : defense) : ");
-                input = 'a';
-                if (!input) {
-                    input = 'a';
-                }
-                input = input.trim().toLowerCase();
-                playing.setStance((input === 'a') ? Player.STANCE.attack : Player.STANCE.defense);
+            if (!game.gamePhase === Game.GAMEPHASE.MOVE) {
+                return (false);
             }
-            for (var i = 0; i < 2; i++) {
-                playing = (playing === player1) ? player2 : player1;
-                waiting = (playing === player1) ? player2 : player1;
-                if ((playing.stance === Player.STANCE.attack) && playing.isAlive()) {
-                    playing.attack(waiting);
-                }
-                playing.setStance(Player.STANCE.attack);
+            if ((playerId < 0) || (playerId > 1)) {
+                return (false);
             }
-        } while (player1.isAlive() && player2.isAlive());
+            if ((stepX > MAX_PLAYER_MOVE) || (stepX < 0)
+                || (stepY > MAX_PLAYER_MOVE) || (stepY < 0)) {
+                return (false);
+            }
+            var player = (playerId === 0) ? player1 : player2;
+            //            if (!game.isValidMove(player, stepX, stepY)) {
+            //                return (false);
+            //            }
+            game.movePlayer(player, stepX, stepY);
+            updatePlayerData(playerId, player);
+            return (true);
+        },
 
-        /*
-        ** Announce the winner
-        */
-        if (player1.isAlive()) {
-            console.log(getWinningPhrase(player1));
-            console.log("Better luck next time " + player2.name);
-        } else {
-            console.log(getWinningPhrase(player2));
-            console.log("Better luck next time "  + player1.name);
-        }
-        if ((newGame = prompt("New game ? (Y / N)") || 'N').toUpperCase() === 'N') {
-            game.stop();
-        }
-    }
+        playerAttack: function(playerId) {
+            if (!game.running()) {
+                return (false);
+            }
+            if (!game.gamePhase === Game.GAMEPHASE.BATTLE) {
+                return (false);
+            }
+            if ((playerId < 0) || (playerId > 1)) {
+                return (false);
+            }
+            var attacker = (playerId === 0) ? player1 : player2;
+            var defender = (playerId === 0) ? player2 : player1;
+            var success = attacker.attack(defender);
 
-    /*
-    ** Tests
-    */
-    //    gameClassInitTests(game);
+            updatePlayerData(0, player1);
+            updatePlayerData(1, player2);
+            return (success);
+        },
+
+        gamePhase: function () {
+            return (game.gamePhase);
+        },
+
+        isPlayerAlive: function(playerId) {
+            if (!game.running()) {
+                return (false);
+            }
+            if ((playerId < 0) || (playerId > 1)) {
+                return (false);
+            }
+            return (((playerId === 0) ? player1 : player2).isAlive());
+        },
+        
+        getPlayerData: function(playerId) {
+            if ((playerId < 0) || (playerId > 1)) {
+                return (false);
+            }
+            return ((playerId === 0) ? player1Data : player2Data)
+        },
+
+        getWinnerPhrase: function(playerId) {
+            if (!game.running()) {
+                return (false);
+            }
+            if ((playerId < 0) || (playerId > 1)) {
+                return (false);
+            }
+            var player = (playerId === 0) ? player1Data : player2Data;
+            
+            if (player.hp >= MAX_PLAYER_HP * .75 ) {
+                return ("awkward !!! ".toUpperCase() + player.name
+                        + " you totally mastered this fight !".toUpperCase()
+                       );
+            } else if (player.hp >= (MAX_PLAYER_HP * .5)) {
+                return ("Congratulations " + player.name + " the victory is yours !");
+            } else if (player.hp >= (MAX_PLAYER_HP * .25)) {
+                return ("Hey " + player.name + " that was a tough fight but you've proven you are the best.");
+            } else {
+                return (player.name + " wins.");
+            }
+        }
+    });
 })();
-
-/*
-** gameClassInitTests
-** Runs tests on Game class
-*/
-function gameClassInitTests(game) {
-    var gameTests = Tests.new("game class init tests");
-
-    gameTests.add("shouldHaveAtLeast4Weapons", true, function() {
-        if (game.weapons.length < 4) {
-            return (false);
-        }
-        return (true);
-    })
-        .add("shouldHaveExactly2Players", 2, function() {
-        return (game.players.length);
-    })
-        .add("shouldGridHave2Players", 2, function() {
-        var count = 0;
-        var grid = game.grid.grid;
-
-        for (var key in grid) {
-            count += (parseInt(grid[key], 10) === Grid.CELLSTATE.player) ? 1 : 0;
-        }
-        return (count);
-    })
-        .runAll();
-}
-
-function getWinningPhrase(player) {
-    if (player.hp >= MAX_PLAYER_HP * .75 ) {
-        return ("awkward !!! ".toUpperCase() + player.name
-                + " you totally mastered this fight !".toUpperCase()
-               );
-    } else if (player.hp >= MAX_PLAYER_HP * .5 ) {
-        return ("Congratulations " + player.name + " the victory is yours !");
-    } else if (player.hp >= MAX_PLAYER_HP * .25 ) {
-        return ("Hey " + player.name + " that was a tough fight but you've proven you are the best.");
-    } else {
-        return (player.name + " wins.");
-    }
-}
 
 
 /* Event Testing
