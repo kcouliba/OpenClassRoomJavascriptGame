@@ -1,24 +1,3 @@
-/*body {
-    margin: 1%;
-    width: 99%;
-}
-
-#graphicInterface {
-    background-color: rgba(0, 0, 50, 1.0);
-    margin: 0 0 0 1%;
-    width: 69%;
-}
-
-#controlInterface {
-    background-color: rgba(200, 200, 200, 0.2);
-    margin: 0 1% 0 5%;
-    width: 25%;
-}
-
-#playerStatuses {
-    
-}*/
-
 #renderingSurface {
     border: 1px solid black;
 }
