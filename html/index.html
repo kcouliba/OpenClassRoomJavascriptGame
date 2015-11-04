@@ -4,79 +4,122 @@
         <meta lang="fr" charset="utf-8" />
         <link rel="stylesheet" href="../css/bootstrap.css" type="text/css" />
         <link rel="stylesheet" href="../css/index.css" type="text/css" />
-        
+
         <title>Let's play</title>
     </head>
     <body>
         <div class="container">
-            <div class="row">
-                <h1 class="page-header">Let's do a great game !!!</h1>
-                <blockquote>
-                    <small class="pull-right">That' what he said</small>
-                </blockquote>
-            </div>
-            <div class="row">
-                <p class="col-lg-4">Ok my only duty is related on the html section</p>
-                <p class="col-lg-8">So now I'm working here</p>
-            </div>
-            <div class="row">
-                <p class="col-lg-3">I'm still here</p>
-                <p class="col-lg-3">Again ...</p>
-            </div>
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-6">6 colonnes
-                    <div class="row">
-                        <div class="col-lg-4">4 colonnes</div>
-                        <div class="col-lg-offset-4 col-lg-4">4 colonnes</div>
-                    </div>
-                </div>
-                <div class="col-lg-6">6 colonnes
-                    <div class="row">
-                        <div class="col-lg-4">4 colonnes</div>
-                        <div class="col-lg-8">8 colonnes</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="container">
-            <section class="row">
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t1.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t2.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t3.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t4.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t5.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t6.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t7.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t8.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t9.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t10.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t11.jpg" alt="Tigre"></div>
-                <div class="col-xs-4 col-sm-3 col-md-2"><img src="../css/assets/images/t12.jpg" alt="Tigre"></div>
-            </section>
-        </div>
-        <div class="container">
-            <header class="row">
-                <div class="col-lg-12">Entête</div>
+            <header class="page-header">
+                <h1>Board game</h1>
             </header>
-            <div class="row">
-                <div class="col-lg-2">
-                    <div class="row">
-                        <aside class="col-lg-12">Aside</aside>
-                        <aside class="col-lg-12">Aside</aside>
-                    </div>
-                </div>
-                <section class="col-lg-8">Section</section>
-                <div class="col-lg-2">
-                    <div class="row">
-                        <aside class="col-lg-12">Aside</aside>
-                        <aside class="col-lg-12">Aside</aside>
-                    </div>
-                </div>
-            </div>
+            <section id="graphicInterface" class="row">
+                <section id="renderingSurface" class="col-md-8">
+                    
+                </section>
+                <aside id="controlInterface" class="col-md-4">
+                    <section id="playerStatuses" class="row">
+                        <div class="col-md-12">
+                            <section id="player1" class="row">
+                                <div class="col-md-12">
+                                    <section class="row well well-sm text-center playerStatus">
+                                        <p class="col-md-8 playerName">Player 1 Name</p>
+                                        <p class="col-md-4 playerHP">Player HP</p>
+                                    </section>
+                                    <section class="row playerWeapon text-left">
+                                        <img class="col-md-3 col-md-offset-1 thumbnail playerWeaponImage" src="../css/assets/images/visage.png" />
+                                        <div class="col-md-7 col-md-offset-1 playerWeaponData">
+                                            <p class="row playerWeaponName">Weapon Name</p>
+                                            <p class="row playerWeaponDamage">Weapon Damage</p>
+                                        </div>
+                                    </section>
+                                    <section class="row text-center playerMove">
+                                        <div class="col-md-12">
+                                            <div class="row moveIntructions">
+                                                <p class="col-md-6">Direction</p>
+                                                <p class="col-md-6">Step</p>
+                                            </div>
+                                            <!--                                            TODO : center button groups-->
+                                            <div class="row">
+                                                <div class="col-md-7 btn-group" role="group">
+                                                    <button type="button" class="btn btn-default playerMoveUp">U</button>
+                                                    <button type="button" class="btn btn-default playerMoveDown">D</button>
+                                                    <button type="button" class="btn btn-default playerMoveLeft">L</button>
+                                                    <button type="button" class="btn btn-default playerMoveRight">R</button>
+                                                </div>
+                                                <div class="col-md-5 btn-group" role="group">
+                                                    <button type="button" class="btn btn-default playerStep1">1</button>
+                                                    <button type="button" class="btn btn-default playerStep2">2</button>
+                                                    <button type="button" class="btn btn-default playerStep3">3</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                    <br/>
+                                    <section class="row playerAction">
+                                        <div class="playerMoveAction">
+                                            <button type="button" class="col-md-12 btn btn-warning playerMoveReady">Ready</button>
+                                        </div>
+                                        <div class="hidden playerBattleAction">
+                                            <button type="button" class="col-md-5 btn btn-info playerBattleAttack">Attack</button>
+                                            <button type="button" class="col-md-5 col-md-offset-2 btn btn-info playerBattleDefend">Defend</button>
+                                        </div>
+                                    </section>
+                                </div>
+                            </section>
+                            <hr />
+                            <section id="player2" class="row">
+                                <div class="col-md-12">
+                                    <section class="row well well-sm text-center playerStatus">
+                                        <p class="col-md-8 playerName">Player 2 Name</p>
+                                        <p class="col-md-4 playerHP">Player HP</p>
+                                    </section>
+                                    <section class="row playerWeapon text-left">
+                                        <img class="col-md-3 col-md-offset-1 thumbnail playerWeaponImage" src="../css/assets/images/visage.png" />
+                                        <div class="col-md-7 col-md-offset-1 playerWeaponData">
+                                            <p class="row playerWeaponName">Weapon Name</p>
+                                            <p class="row playerWeaponDamage">Weapon Damage</p>
+                                        </div>
+                                    </section>
+                                    <section class="row text-center playerMove">
+                                        <div class="col-md-12">
+                                            <div class="row moveIntructions">
+                                                <p class="col-md-6">Direction</p>
+                                                <p class="col-md-6">Step</p>
+                                            </div>
+                                            <!--                                            TODO : center button groups-->
+                                            <div class="row">
+                                                <div class="col-md-7 btn-group" role="group">
+                                                    <button type="button" class="btn btn-default playerMoveUp">U</button>
+                                                    <button type="button" class="btn btn-default playerMoveDown">D</button>
+                                                    <button type="button" class="btn btn-default playerMoveLeft">L</button>
+                                                    <button type="button" class="btn btn-default playerMoveRight">R</button>
+                                                </div>
+                                                <div class="col-md-5 btn-group" role="group">
+                                                    <button type="button" class="btn btn-default playerStep1">1</button>
+                                                    <button type="button" class="btn btn-default playerStep2">2</button>
+                                                    <button type="button" class="btn btn-default playerStep3">3</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                    <br/>
+                                    <section class="row playerAction">
+                                        <div class="playerMoveAction">
+                                            <button type="button" class="col-md-12 btn btn-warning playerMoveReady">Ready</button>
+                                        </div>
+                                        <div class="hidden playerBattleAction">
+                                            <button type="button" class="col-md-5 btn btn-info playerBattleAttack">Attack</button>
+                                            <button type="button" class="col-md-5 col-md-offset-2 btn btn-info playerBattleDefend">Defend</button>
+                                        </div>
+                                    </section>
+                                </div>
+                            </section>
+                        </div>
+                    </section>
+                </aside>
+            </section>
             <footer class="row">
-                <div class="col-lg-12">Pied de page</div>
+
             </footer>
         </div>
         <script type="text/javascript" src="../js/loader.js"></script>

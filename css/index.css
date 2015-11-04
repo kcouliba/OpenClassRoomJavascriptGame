@@ -1,18 +1,29 @@
-body {
-  padding-top: 10px;
-}
-[class*="col-"], footer {
-  background-color: lightgreen;
-  border: 2px solid black;
-  border-radius: 6px;
-  line-height: 40px;
-  text-align: center;
+/*body {
+    margin: 1%;
+    width: 99%;
 }
 
-h1 {
-    color: rebeccapurple;
+#graphicInterface {
+    background-color: rgba(0, 0, 50, 1.0);
+    margin: 0 0 0 1%;
+    width: 69%;
 }
 
-img {
-   width: 100%;
+#controlInterface {
+    background-color: rgba(200, 200, 200, 0.2);
+    margin: 0 1% 0 5%;
+    width: 25%;
+}
+
+#playerStatuses {
+    
+}*/
+
+#renderingSurface {
+    border: 1px solid black;
+}
+
+img[class*="thumbnail"] {
+    width: 64px;
+    height: 64px;
 }
