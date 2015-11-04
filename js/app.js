@@ -183,21 +183,3 @@ var app = (function() {
         }
     });
 })();
-
-
-/* Event Testing
-var ev = new CustomEvent('customEvt', { 'detail': { dumb: "dumb" } });
-
-var body = document.getElementsByTagName('body')[0];
-
-body.addEventListener('customEvt', function(e) {
-    console.log(e);
-    console.log(e.detail.dumb);
-    alert("custom event triggered");
-});
-document.getElementsByTagName('div')[0].addEventListener('click', function() {
-    body.dispatchEvent(ev);
-});
-
-document.dispatchEvent(ev);
-*/
