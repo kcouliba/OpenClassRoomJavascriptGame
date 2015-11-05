@@ -60,12 +60,18 @@ document.dispatchEvent(ev);
 
     var DataPlayer = {
         moveDirection: Game.Position.new(0, 0),
-        moveStep: 1,
+        moveStep: 0,
+        moveReady: false,
 
         init: function() {
             this.moveDirection = Game.Position.new(0, 0);
-            this.moveStep = 1;
+            this.moveStep = 0;
+            this.moveReady = false;
             return (this);
+        },
+        
+        reset: function () {
+            return (this.init());
         }
     };
 
@@ -83,25 +89,21 @@ document.dispatchEvent(ev);
             var defendButton = playerUI.defends[0];
 
             for (var i = 0; i < directionButtons.length; i++) {
-                directionButtons[i].addEventListener('click', function setMoveDirection(evt) {
+                directionButtons[i].addEventListener('click', function(evt) {
                     if (evt.target.className.match(/up/i)) {
                         dataPlayer.moveDirection.set(0, -1);
-                        console.log("UP");
                     } else if (evt.target.className.match(/right/i)) {
-                        console.log("RIGHT");
                         dataPlayer.moveDirection.set(1, 0);
                     } else if (evt.target.className.match(/down/i)) {
                         dataPlayer.moveDirection.set(0, 1);
-                        console.log("DOWN");
                     } else if (evt.target.className.match(/left/i)) {
                         dataPlayer.moveDirection.set(-1, 0);
-                        console.log("LEFT");
                     }
-                    console.log(dataPlayer + " [" + id + "]");
+                    updateReadyButtonStatus(dataPlayer, moveReadyButton);
                 });
             }
             for (var i = 0; i < stepButtons.length; i++) {
-                stepButtons[i].addEventListener('click', function setMoveStep(evt) {
+                stepButtons[i].addEventListener('click', function(evt) {
                     if (evt.target.className.match(/step1/i)) {
                         dataPlayer.moveStep = 1;
                     } else if (evt.target.className.match(/step2/i)) {
@@ -109,10 +111,10 @@ document.dispatchEvent(ev);
                     } else if (evt.target.className.match(/step3/i)) {
                         dataPlayer.moveStep = 3;
                     }
-                    console.log(dataPlayer.moveStep + " step [" + id + "]");
+                    updateReadyButtonStatus(dataPlayer, moveReadyButton);
                 });
             }
-            moveReadyButton.addEventListener('click', function validateMove() {
+            moveReadyButton.addEventListener('click', function() {
                 var move = Game.Position.clone(dataPlayer.moveDirection);
 
                 dataPlayer.moveDirection.x *= dataPlayer.moveStep;
@@ -120,13 +122,20 @@ document.dispatchEvent(ev);
                 // Check if both ready buttons have been activated
                 // Then trigger the moving 
                 console.log(dataPlayer.moveDirection);
-                
+                console.log(dataPlayer.moveReady);
+
                 // This block should be triggered after confirmation that the move is not illegal
                 // and both players are ready (custom event ?)
-//                dataPlayer.moveDirection.set(0, 0);
-//                dataPlayer.moveStep = 1;
-//                updateStatusUI();
+                dataPlayer.reset();
+                //                updateStatusUI();
+                updateReadyButtonStatus(dataPlayer, moveReadyButton);
+                // End of block
             });
+            attackButton.addEventListener('click', function() {
+                this.setAttribute('disabled', "disabled");
+                defendButton.setAttribute('disabled', "disabled");
+            });
+            updateReadyButtonStatus(dataPlayer, moveReadyButton);
         })(id);
     }
 
@@ -142,9 +151,32 @@ document.dispatchEvent(ev);
             updateStatusUI();
         }
     });
+    
+    
+    // UI update functions
+    
+    /*
+    ** updateReadyButtonStatus
+    ** @param dataPlayer : DataPlayer
+    ** enable or disable button ready
+    */
+    function updateReadyButtonStatus(dataPlayer, moveReadyButton) {
+        if ((dataPlayer.moveDirection.x !== dataPlayer.moveDirection.y)
+            && (dataPlayer.moveStep !== 0)) {
+            moveReadyButton.removeAttribute('disabled');
+            dataPlayer.moveReady = true;
+            return ;
+        }
+        moveReadyButton.setAttribute('disabled', "disabled");
+    }
 
+    /*
+    ** updateStatusUI
+    ** Updates player statuses UI
+    */
     function updateStatusUI() {
         var player;
+        
         for (var i = 0; i < playersUI.length; i++) {
             (function(i) {
                 player = app.getPlayerData(i);
