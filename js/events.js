@@ -69,7 +69,7 @@ document.dispatchEvent(ev);
             this.moveReady = false;
             return (this);
         },
-        
+
         reset: function () {
             return (this.init());
         }
@@ -139,7 +139,7 @@ document.dispatchEvent(ev);
         })(id);
     }
 
-    // event to start a new game
+    // Event to start a new game
     document.addEventListener('keypress', function(evt) {
         if (evt.which == 13) {
             var player1 = prompt("Nom du joueur 1") || "";
@@ -149,16 +149,37 @@ document.dispatchEvent(ev);
             player2 = player2.trim();
             app.newGame(player1, player2);
             updateStatusUI();
+            checkSwitchGamePhase();
         }
     });
-    
-    
+
+
+    // Checking functions
+    function checkSwitchGamePhase() {
+        if (app.getGamePhase() === Game.GAMEPHASE.BATTLE) {
+            var moveButtonsDiv = [];
+            var battleButtonsDiv = [];
+
+            moveButtonsDiv.push(document.getElementById('player1').getElementsByClassName('playerActionMove')[0]);
+            moveButtonsDiv.push(document.getElementById('player2').getElementsByClassName('playerActionMove')[0]);
+            battleButtonsDiv.push(document.getElementById('player1').getElementsByClassName('playerActionBattle')[0]);
+            battleButtonsDiv.push(document.getElementById('player2').getElementsByClassName('playerActionBattle')[0]);
+
+            for (var i = 0; i < moveButtonsDiv.length; i++) {
+                moveButtonsDiv[i].className += " hidden";
+            }
+            for (var i = 0; i < battleButtonsDiv.length; i++) {
+                battleButtonsDiv[i].className = moveButtonsDiv[i].className.replace(/hidden/, "");
+            }
+        }
+    }
+
     // UI update functions
-    
+
     /*
     ** updateReadyButtonStatus
     ** @param dataPlayer : DataPlayer
-    ** enable or disable button ready
+    ** Enables or disables button ready
     */
     function updateReadyButtonStatus(dataPlayer, moveReadyButton) {
         if ((dataPlayer.moveDirection.x !== dataPlayer.moveDirection.y)
@@ -176,7 +197,7 @@ document.dispatchEvent(ev);
     */
     function updateStatusUI() {
         var player;
-        
+
         for (var i = 0; i < playersUI.length; i++) {
             (function(i) {
                 player = app.getPlayerData(i);

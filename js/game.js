@@ -101,7 +101,7 @@ var Game = {
             this.players.push(this.Element.new(players[i]));
         }
         this.placeElements();
-        gamePhase = Game.GAMEPHASE.MOVE;
+        this.gamePhase = Game.GAMEPHASE.MOVE;
         if (DEBUG) {
             console.log("Game initialized.");
         }

@@ -116,6 +116,7 @@ var app = (function() {
             //                return (false);
             //            }
             game.movePlayer(player, stepX, stepY);
+            this.gamePhase = (game.playerCollision() == true) ? Game.GAMEPHASE.BATTLE : Game.GAMEPHASE.MOVE;
             updatePlayerData(playerId, player);
             return (true);
         },
@@ -139,7 +140,7 @@ var app = (function() {
             return (success);
         },
 
-        gamePhase: function () {
+        getGamePhase: function () {
             return (game.gamePhase);
         },
 
