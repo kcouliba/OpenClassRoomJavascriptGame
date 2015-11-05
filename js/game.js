@@ -29,6 +29,11 @@ var Game = {
             return (self);
         },
         
+        set: function(x, y) {
+            this.x = x;
+            this.y = y;
+        },
+        
         add: function(position) {
             return (this.new(this.x + position.x, this.y + position.y));
         },
