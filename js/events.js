@@ -28,9 +28,14 @@ document.dispatchEvent(ev);
 ** So there are mainly events in response with user interaction
 */
 
+// IIFE encapsulation
 (function(app) {
-    var UIPlayer = {
-        that: null,
+    /*
+    ** DOMPlayer
+    ** An object that stores player related DOM elements
+    */
+    var DOMPlayer = {
+        self: null,
         name: null,
         hp: null,
         weaponName: null,
@@ -41,27 +46,32 @@ document.dispatchEvent(ev);
         moveActionReady: null,
         attacks: null,
         defends: null,
-
+        
         init: function(id) {
-            this.that = document.getElementById(id);
-            this.name = this.that.getElementsByClassName('playerName')[0];
-            this.hp = this.that.getElementsByClassName('playerHP')[0];
-            this.weaponName = this.that.getElementsByClassName('playerWeaponName')[0];
-            this.weaponDamage = this.that.getElementsByClassName('playerWeaponDamage')[0];
-            this.weaponImage = this.that.getElementsByClassName('playerWeaponImage')[0];
-            this.direction = this.that.getElementsByClassName('playerMoveDirection');
-            this.step = this.that.getElementsByClassName('playerMoveStep');
-            this.moveActionReady = this.that.getElementsByClassName('playerActionReadyMove');
-            this.attacks = this.that.getElementsByClassName('playerActionBattleAttack');
-            this.defends = this.that.getElementsByClassName('playerActionBattleDefend');
+            this.self = document.getElementById(id);
+            this.name = this.self.getElementsByClassName('playerName')[0];
+            this.hp = this.self.getElementsByClassName('playerHP')[0];
+            this.weaponName = this.self.getElementsByClassName('playerWeaponName')[0];
+            this.weaponDamage = this.self.getElementsByClassName('playerWeaponDamage')[0];
+            this.weaponImage = this.self.getElementsByClassName('playerWeaponImage')[0];
+            this.direction = this.self.getElementsByClassName('playerMoveDirection');
+            this.step = this.self.getElementsByClassName('playerMoveStep');
+            this.moveActionReady = this.self.getElementsByClassName('playerActionReadyMove');
+            this.attacks = this.self.getElementsByClassName('playerActionBattleAttack');
+            this.defends = this.self.getElementsByClassName('playerActionBattleDefend');
             return (this);
         }
     };
 
+    /*
+    ** DataPlayer
+    ** An object that stores player related data
+    */
     var DataPlayer = {
         moveDirection: Game.Position.new(0, 0),
         moveStep: 0,
         moveReady: false,
+        stance: -1,
 
         init: function() {
             this.moveDirection = Game.Position.new(0, 0);
@@ -69,25 +79,40 @@ document.dispatchEvent(ev);
             this.moveReady = false;
             return (this);
         },
+        
+        setStance: function(stance) {
+            if ((stance != Player.STANCE.ATTACK) 
+                && (stance != Player.STANCE.DEFENSE))
+                stance = Player.STANCE.ATTACK;
+            this.stance = stance;
+        },
 
         reset: function () {
             return (this.init());
         }
     };
 
-    var playersUI = [Object.create(UIPlayer).init('player1'), Object.create(UIPlayer).init('player2')];
+    /*
+    ** playersDOM and dataPlayers instanciation
+    */
+    var playersDOM = [Object.create(DOMPlayer).init('player1'), Object.create(DOMPlayer).init('player2')];
     var dataPlayers = [Object.create(DataPlayer).init(), Object.create(DataPlayer).init()];
 
-    for (var id = 0; id < playersUI.length; id++) {
+    /*
+    ** Event control initialization for both players
+    */
+    for (var id = 0; id < playersDOM.length; id++) {
+        // IIFE encapsulation
         (function (id) {
-            var playerUI = playersUI[id];
+            var playerDOM = playersDOM[id];
             var dataPlayer = dataPlayers[id];
-            var directionButtons = playerUI.direction[0].getElementsByTagName('button');
-            var stepButtons = playerUI.step[0].getElementsByTagName('button');
-            var moveReadyButton = playerUI.moveActionReady[0];
-            var attackButton = playerUI.attacks[0];
-            var defendButton = playerUI.defends[0];
+            var directionButtons = playerDOM.direction[0].getElementsByTagName('button');
+            var stepButtons = playerDOM.step[0].getElementsByTagName('button');
+            var moveReadyButton = playerDOM.moveActionReady[0];
+            var attackButton = playerDOM.attacks[0];
+            var defendButton = playerDOM.defends[0];
 
+            // Direction event
             for (var i = 0; i < directionButtons.length; i++) {
                 directionButtons[i].addEventListener('click', function(evt) {
                     if (evt.target.className.match(/up/i)) {
@@ -102,6 +127,8 @@ document.dispatchEvent(ev);
                     updateReadyButtonStatus(dataPlayer, moveReadyButton);
                 });
             }
+            
+            // Step event
             for (var i = 0; i < stepButtons.length; i++) {
                 stepButtons[i].addEventListener('click', function(evt) {
                     if (evt.target.className.match(/step1/i)) {
@@ -114,6 +141,8 @@ document.dispatchEvent(ev);
                     updateReadyButtonStatus(dataPlayer, moveReadyButton);
                 });
             }
+            
+            // Move ready event
             moveReadyButton.addEventListener('click', function() {
                 var move = Game.Position.clone(dataPlayer.moveDirection);
 
@@ -131,10 +160,21 @@ document.dispatchEvent(ev);
                 updateReadyButtonStatus(dataPlayer, moveReadyButton);
                 // End of block
             });
+            
+            // Attack event
             attackButton.addEventListener('click', function() {
+                dataPlayer.setStance(Player.STANCE.ATTACK);
                 this.setAttribute('disabled', "disabled");
                 defendButton.setAttribute('disabled', "disabled");
             });
+            
+            // Defense event
+            defendButton.addEventListener('click', function() {
+                dataPlayer.setStance(Player.STANCE.DEFENSE);
+                this.setAttribute('disabled', "disabled");
+                attackButton.setAttribute('disabled', "disabled");
+            });
+            
             updateReadyButtonStatus(dataPlayer, moveReadyButton);
         })(id);
     }
@@ -142,29 +182,39 @@ document.dispatchEvent(ev);
     // Event to start a new game
     document.addEventListener('keypress', function(evt) {
         if (evt.which == 13) {
-            var player1 = prompt("Nom du joueur 1") || "";
-            var player2 = prompt("Nom du joueur 2") || "";
+//            var player1 = prompt("Nom du joueur 1").trim() || "";
+//            var player2 = prompt("Nom du joueur 2").trim() || "";
+            var player1 = "";
+            var player2 = "";
 
-            player1 = player1.trim();
-            player2 = player2.trim();
             app.newGame(player1, player2);
             updateStatusUI();
             checkSwitchGamePhase();
         }
     });
+    
+    // UI update functions
 
-
-    // Checking functions
+    
+    /*
+    ** checkSwitchGamePhase
+    ** Checking function
+    */
     function checkSwitchGamePhase() {
         if (app.getGamePhase() === Game.GAMEPHASE.BATTLE) {
-            var moveButtonsDiv = [];
-            var battleButtonsDiv = [];
+            var moveButtonsDiv = [
+                document.getElementById('player1').getElementsByClassName('playerActionMove')[0],
+                document.getElementById('player2').getElementsByClassName('playerActionMove')[0]
+            ];
+            var battleButtonsDiv = [
+                document.getElementById('player1').getElementsByClassName('playerActionBattle')[0],
+                document.getElementById('player2').getElementsByClassName('playerActionBattle')[0]
+            ];
 
-            moveButtonsDiv.push(document.getElementById('player1').getElementsByClassName('playerActionMove')[0]);
-            moveButtonsDiv.push(document.getElementById('player2').getElementsByClassName('playerActionMove')[0]);
-            battleButtonsDiv.push(document.getElementById('player1').getElementsByClassName('playerActionBattle')[0]);
-            battleButtonsDiv.push(document.getElementById('player2').getElementsByClassName('playerActionBattle')[0]);
-
+//            moveButtonsDiv.push(document.getElementById('player1').getElementsByClassName('playerActionMove')[0]);
+//            moveButtonsDiv.push(document.getElementById('player2').getElementsByClassName('playerActionMove')[0]);
+//            battleButtonsDiv.push(document.getElementById('player1').getElementsByClassName('playerActionBattle')[0]);
+//            battleButtonsDiv.push(document.getElementById('player2').getElementsByClassName('playerActionBattle')[0]);
             for (var i = 0; i < moveButtonsDiv.length; i++) {
                 moveButtonsDiv[i].className += " hidden";
             }
@@ -173,8 +223,6 @@ document.dispatchEvent(ev);
             }
         }
     }
-
-    // UI update functions
 
     /*
     ** updateReadyButtonStatus
@@ -198,14 +246,14 @@ document.dispatchEvent(ev);
     function updateStatusUI() {
         var player;
 
-        for (var i = 0; i < playersUI.length; i++) {
+        for (var i = 0; i < playersDOM.length; i++) {
             (function(i) {
                 player = app.getPlayerData(i);
-                playersUI[i].name.textContent = player.name;
-                playersUI[i].hp.textContent = player.hp + " HP";
-                playersUI[i].weaponName.textContent = player.weaponName;
-                playersUI[i].weaponDamage.textContent = player.weaponDamage + " DMG";
-                playersUI[i].weaponImage.src = ("../css/assets/images/" + player.weaponName.toLowerCase() + ".png").replace(/ /, "_");
+                playersDOM[i].name.textContent = player.name;
+                playersDOM[i].hp.textContent = player.hp + " HP";
+                playersDOM[i].weaponName.textContent = player.weaponName;
+                playersDOM[i].weaponDamage.textContent = player.weaponDamage + " DMG";
+                playersDOM[i].weaponImage.src = ("../css/assets/images/" + player.weaponName.toLowerCase() + ".png").replace(/ /, "_");
             })(i);
         }
     }

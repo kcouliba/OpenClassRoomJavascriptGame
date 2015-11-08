@@ -14,8 +14,8 @@ var Player = {
     weapon: null,
     stance: 0,
     STANCE: {
-        attack: 0,
-        defense: 1
+        ATTACK: 0,
+        DEFENSE: 1
     },
 
     /*
@@ -27,7 +27,7 @@ var Player = {
     init: function(name) {
         this.name = name;
         this.hp = 100;
-        this.stance = Player.STANCE.attack;
+        this.stance = Player.STANCE.ATTACK;
         if (DEBUG) {
             console.log("New player created : \n\t" + this);
         }
@@ -54,7 +54,7 @@ var Player = {
         this.stance = stance;
         if (DEBUG) {
             console.log("Player " + this.name + " switched stance to "
-                        + ((this.stance === Player.STANCE.defense) ? "defense" : "attack") + ".");
+                        + ((this.stance === Player.STANCE.DEFENSE) ? "defense" : "attack") + ".");
         }
         return (this);
     },
@@ -120,7 +120,7 @@ var Player = {
         if (!this.isAlive()) {
             return (false);
         }
-        this.hp -= (this.stance === Player.STANCE.defense) 
+        this.hp -= (this.stance === Player.STANCE.DEFENSE) 
             ? Math.ceil(damage / 2) : damage;
         this.hp = (this.hp < 0) ? 0 : this.hp;
         if (DEBUG) {
