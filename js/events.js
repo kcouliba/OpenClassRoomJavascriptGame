@@ -31,6 +31,22 @@ document.dispatchEvent(ev);
 // IIFE encapsulation
 (function(app) {
     /*
+    ** RenderingSurface
+    ** Surface which graphics elements are displayed
+    */
+    var RenderingSurface = {
+        width: 0,
+        height: 0,
+
+        init: function(width, height) {
+            this.width = width;
+            this.height = height;
+
+            return (this);
+        }
+    };
+
+    /*
     ** DOMPlayer
     ** An object that stores player related DOM elements
     */
@@ -46,7 +62,7 @@ document.dispatchEvent(ev);
         moveActionReady: null,
         attacks: null,
         defends: null,
-        
+
         init: function(id) {
             this.self = document.getElementById(id);
             this.name = this.self.getElementsByClassName('playerName')[0];
@@ -79,7 +95,7 @@ document.dispatchEvent(ev);
             this.moveReady = false;
             return (this);
         },
-        
+
         setStance: function(stance) {
             if ((stance != Player.STANCE.ATTACK) 
                 && (stance != Player.STANCE.DEFENSE))
@@ -93,10 +109,11 @@ document.dispatchEvent(ev);
     };
 
     /*
-    ** playersDOM and dataPlayers instanciation
+    ** Instanciation
     */
     var playersDOM = [Object.create(DOMPlayer).init('player1'), Object.create(DOMPlayer).init('player2')];
     var dataPlayers = [Object.create(DataPlayer).init(), Object.create(DataPlayer).init()];
+    var surface = Object.create(RenderingSurface);
 
     /*
     ** Event control initialization for both players
@@ -127,7 +144,7 @@ document.dispatchEvent(ev);
                     updateReadyButtonStatus(dataPlayer, moveReadyButton);
                 });
             }
-            
+
             // Step event
             for (var i = 0; i < stepButtons.length; i++) {
                 stepButtons[i].addEventListener('click', function(evt) {
@@ -141,7 +158,7 @@ document.dispatchEvent(ev);
                     updateReadyButtonStatus(dataPlayer, moveReadyButton);
                 });
             }
-            
+
             // Move ready event
             moveReadyButton.addEventListener('click', function() {
                 var move = Game.Position.clone(dataPlayer.moveDirection);
@@ -160,21 +177,21 @@ document.dispatchEvent(ev);
                 updateReadyButtonStatus(dataPlayer, moveReadyButton);
                 // End of block
             });
-            
+
             // Attack event
             attackButton.addEventListener('click', function() {
                 dataPlayer.setStance(Player.STANCE.ATTACK);
                 this.setAttribute('disabled', "disabled");
                 defendButton.setAttribute('disabled', "disabled");
             });
-            
+
             // Defense event
             defendButton.addEventListener('click', function() {
                 dataPlayer.setStance(Player.STANCE.DEFENSE);
                 this.setAttribute('disabled', "disabled");
                 attackButton.setAttribute('disabled', "disabled");
             });
-            
+
             updateReadyButtonStatus(dataPlayer, moveReadyButton);
         })(id);
     }
@@ -182,20 +199,87 @@ document.dispatchEvent(ev);
     // Event to start a new game
     document.addEventListener('keypress', function(evt) {
         if (evt.which == 13) {
-//            var player1 = prompt("Nom du joueur 1").trim() || "";
-//            var player2 = prompt("Nom du joueur 2").trim() || "";
+            //            var player1 = prompt("Nom du joueur 1").trim() || "";
+            //            var player2 = prompt("Nom du joueur 2").trim() || "";
             var player1 = "";
             var player2 = "";
 
             app.newGame(player1, player2);
             updateStatusUI();
             checkSwitchGamePhase();
+
+
+            // Grid UI initialization
+            var grid = app.getGrid();
+            var surface = document.getElementById('renderingSurface');
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
+            var width = 480;
+            var height = width;
+            var step = width / grid.size;
+
+            // Canvas initialization
+            canvas.setAttribute('width', width);
+            canvas.setAttribute('height', height);
+            canvas.style.width = width + "px";
+            canvas.style.height = height + "px";
+            canvas.style.marginLeft = ((surface.clientWidth - width) / 2) + "px"; // Centering
+            canvas.style.marginTop = ((surface.clientHeight - height) / 2) + "px"; // Centering
+
+            //            ctx.strokeStyle = "rgb(200, 0, 0)";
+            //            ctx.strokeRect(0, 0, width, height);
+
+            console.log(grid);
+            colorGreen = "rgb(0, 200, 0)"; // Free cell
+            colorRed = "rgb(200, 0, 0)"; // Obstacle cell
+            colorBlue = "rgb(0, 0, 200)"; // Weapon cell
+            colorBlack = "rgb(0, 0, 0)"; // Player cell
+            for (var j = 0; j < grid.size; j++) {
+                for (var i = 0; i < grid.size; i++) {
+                    if (grid.grid[i + (j * grid.size)] === Grid.CELLSTATE.FREE) {
+                        ctx.strokeStyle = colorGreen;
+                        ctx.strokeRect(i * step, j * step, step, step);
+                    } else if (grid.grid[i + (j * grid.size)] === Grid.CELLSTATE.OBSTACLE) {
+                        ctx.fillStyle = colorRed;
+                        ctx.fillRect(i * step, j * step, step, step);
+                    } else if (grid.grid[i + (j * grid.size)] === Grid.CELLSTATE.WEAPON) {
+                        ctx.fillStyle = colorBlue;
+                        ctx.fillRect(i * step, j * step, step, step);
+                    } else if (grid.grid[i + (j * grid.size)] === Grid.CELLSTATE.PLAYER) {
+                        ctx.fillStyle = colorBlack;
+                        ctx.fillRect(i * step, j * step, step, step);
+                    }
+                }
+            }
+            //            for (var j = 0; j < height; j += step) {
+            //                for (var i = 0; i < width; i += step) {
+            //                    if ((i % (2 * step)) === 0) {
+            //                        ctx.fillStyle = colorBlue;
+            //                        ctx.fillRect(i, j, step, step);
+            //                    } else if (((i % (3 * step)) === 0) && ((j % (2 * step)) === 0)) {
+            //                        ctx.strokeStyle = colorRed;
+            //                        ctx.strokeRect(i, j, step, step);
+            //                    } else {
+            //                        ctx.fillStyle = colorGreen;
+            //                        ctx.fillRect(i, j, step, step);
+            //                    }
+            //                }
+            //            }
+
+            // DEBUG
+            console.log(ctx);
+            console.log(surface.offsetWidth);
+            console.log(surface.offsetLeft);
+            console.log(surface.offsetLeft + surface.offsetWidth);
+            console.log(surface.clientWidth);
+            console.log(surface.clientLeft);
+            console.log(surface.clientLeft + surface.clientWidth);
         }
     });
-    
+
     // UI update functions
 
-    
+
     /*
     ** checkSwitchGamePhase
     ** Checking function
@@ -211,10 +295,10 @@ document.dispatchEvent(ev);
                 document.getElementById('player2').getElementsByClassName('playerActionBattle')[0]
             ];
 
-//            moveButtonsDiv.push(document.getElementById('player1').getElementsByClassName('playerActionMove')[0]);
-//            moveButtonsDiv.push(document.getElementById('player2').getElementsByClassName('playerActionMove')[0]);
-//            battleButtonsDiv.push(document.getElementById('player1').getElementsByClassName('playerActionBattle')[0]);
-//            battleButtonsDiv.push(document.getElementById('player2').getElementsByClassName('playerActionBattle')[0]);
+            //            moveButtonsDiv.push(document.getElementById('player1').getElementsByClassName('playerActionMove')[0]);
+            //            moveButtonsDiv.push(document.getElementById('player2').getElementsByClassName('playerActionMove')[0]);
+            //            battleButtonsDiv.push(document.getElementById('player1').getElementsByClassName('playerActionBattle')[0]);
+            //            battleButtonsDiv.push(document.getElementById('player2').getElementsByClassName('playerActionBattle')[0]);
             for (var i = 0; i < moveButtonsDiv.length; i++) {
                 moveButtonsDiv[i].className += " hidden";
             }

@@ -154,6 +154,10 @@ var app = (function() {
             return (((playerId === 0) ? player1 : player2).isAlive());
         },
         
+        getGrid: function() {
+            return (game.grid);
+        },
+        
         getPlayerData: function(playerId) {
             if ((playerId < 0) || (playerId > 1)) {
                 return (false);

@@ -170,8 +170,8 @@ var Game = {
             var placed = false;
 
             for (var i = 0; i < Math.floor(this.grid.size / 2); i++) {
-                if (this.grid.grid[i + (j * this.grid.size)] === Grid.CELLSTATE.free) {
-                    this.grid.grid[i + (j * this.grid.size)] = Grid.CELLSTATE.player;
+                if (this.grid.grid[i + (j * this.grid.size)] === Grid.CELLSTATE.FREE) {
+                    this.grid.grid[i + (j * this.grid.size)] = Grid.CELLSTATE.PLAYER;
                     this.players[0].setPosition(i, j);
                     placed = true;
                     break ;
@@ -189,8 +189,8 @@ var Game = {
             var placed = false;
 
             for (var i = this.grid.size - 1; i > Math.floor(this.grid.size / 2); i--) {
-                if (this.grid.grid[i + (j * this.grid.size)] === Grid.CELLSTATE.free) {
-                    this.grid.grid[i + (j * this.grid.size)] = Grid.CELLSTATE.player;
+                if (this.grid.grid[i + (j * this.grid.size)] === Grid.CELLSTATE.FREE) {
+                    this.grid.grid[i + (j * this.grid.size)] = Grid.CELLSTATE.PLAYER;
                     this.players[1].setPosition(i, j);
                     placed = true;
                     break ;
@@ -239,9 +239,9 @@ var Game = {
                 console.log("Player " + player.name + " is moving left");
             }
             for (var i = currentPos.x - 1; i >= nextPos.x; i--) {
-                if (grid.stateAt(i, currentPos.y) === Grid.CELLSTATE.weapon) { // weapon encountered
+                if (grid.stateAt(i, currentPos.y) === Grid.CELLSTATE.WEAPON) { // weapon encountered
                     player.equipWeapon(this.getWeaponAt(i, currentPos.y));
-                } else if (grid.stateAt(i, currentPos.y) !== Grid.CELLSTATE.free) { // obstacle or player encountered
+                } else if (grid.stateAt(i, currentPos.y) !== Grid.CELLSTATE.FREE) { // obstacle or player encountered
                     if (DEBUG) {
                         console.log("Player " + player.name + " encountered an obstacle at : " + this.Position.new(i, currentPos.y));
                     }
@@ -254,9 +254,9 @@ var Game = {
                 console.log("Player " + player.name + " is moving right");
             }
             for (var i = currentPos.x + 1; i <= nextPos.x; i++) {
-                if (grid.grid[i + (currentPos.y * grid.size)] === Grid.CELLSTATE.weapon) { // weapon encountered
+                if (grid.grid[i + (currentPos.y * grid.size)] === Grid.CELLSTATE.WEAPON) { // weapon encountered
                     player.equipWeapon(this.getWeaponAt(i, currentPos.y));
-                } else if (grid.stateAt(i, currentPos.y) !== Grid.CELLSTATE.free) { // obstacle or player encountered
+                } else if (grid.stateAt(i, currentPos.y) !== Grid.CELLSTATE.FREE) { // obstacle or player encountered
                     if (DEBUG) {
                         console.log("Player " + player.name + " encountered an obstacle at : " + this.Position.new(i, currentPos.y));
                     }
@@ -270,9 +270,9 @@ var Game = {
                 console.log("Player " + player.name + " is moving up");
             }
             for (var i = currentPos.y - 1; i >= nextPos.y; i--) {
-                if (grid.stateAt(nextPos.x, i) === Grid.CELLSTATE.weapon) { // weapon encountered
+                if (grid.stateAt(nextPos.x, i) === Grid.CELLSTATE.WEAPON) { // weapon encountered
                     player.equipWeapon(this.getWeaponAt(nextPos.x, i));
-                } else if (grid.stateAt(nextPos.x, i) !== Grid.CELLSTATE.free) { // obstacle or player encountered
+                } else if (grid.stateAt(nextPos.x, i) !== Grid.CELLSTATE.FREE) { // obstacle or player encountered
                     if (DEBUG) {
                         console.log("Player " + player.name + " encountered an obstacle at : " + this.Position.new(nextPos.x, i));
                     }
@@ -285,9 +285,9 @@ var Game = {
                 console.log("Player " + player.name + " is moving down");
             }
             for (var i = currentPos.y + 1; i <= nextPos.y; i++) {
-                if (grid.stateAt(nextPos.x, i) === Grid.CELLSTATE.weapon) { // weapon encountered
+                if (grid.stateAt(nextPos.x, i) === Grid.CELLSTATE.WEAPON) { // weapon encountered
                     player.equipWeapon(this.getWeaponAt(nextPos.x, i));
-                } else if (grid.stateAt(nextPos.x, i) !== Grid.CELLSTATE.free) { // obstacle or player encountered
+                } else if (grid.stateAt(nextPos.x, i) !== Grid.CELLSTATE.FREE) { // obstacle or player encountered
                     if (DEBUG) {
                         console.log("Player " + player.name + " encountered an obstacle at : " + this.Position.new(nextPos.x, i));
                     }
@@ -300,8 +300,8 @@ var Game = {
         console.log("Previous selected player position is : " + currentPos);
         player.setPosition(nextPos.x, nextPos.y);
         // grid update
-        grid.grid[currentPos.x + (currentPos.y * grid.size)] = Grid.CELLSTATE.free;
-        grid.grid[nextPos.x + (nextPos.y * grid.size)] = Grid.CELLSTATE.player;
+        grid.grid[currentPos.x + (currentPos.y * grid.size)] = Grid.CELLSTATE.FREE;
+        grid.grid[nextPos.x + (nextPos.y * grid.size)] = Grid.CELLSTATE.PLAYER;
         if (DEBUG) {
             console.log("After computing selected player position is : " + player.getPosition());
             console.log("Previous selected player position is : " + currentPos);

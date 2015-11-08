@@ -13,10 +13,10 @@ var Grid = {
     obstacles: 0,
     grid: [],
     CELLSTATE: {
-        free: 0,
-        obstacle: 1,
-        player: 2,
-        weapon: 3
+        FREE: 0,
+        OBSTACLE: 1,
+        PLAYER: 2,
+        WEAPON: 3
     },
     
     /*
@@ -77,9 +77,9 @@ function generateGrid(size, obstacleCount) {
     for (var i = 0; i < cellsCount; i++) {
         row += (i % 10 == 0) ? 1 : 0;
         if ((Math.round(Math.random() * cellsCount) < 15) && (obstacleCount-- > 0)) {
-            grid.push(Grid.CELLSTATE.obstacle);
+            grid.push(Grid.CELLSTATE.OBSTACLE);
         } else {
-            grid.push(Grid.CELLSTATE.free);
+            grid.push(Grid.CELLSTATE.FREE);
         }
     }
     if (DEBUG) {
