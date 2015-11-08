@@ -201,15 +201,11 @@ document.dispatchEvent(ev);
         if (evt.which == 13) {
             //            var player1 = prompt("Nom du joueur 1").trim() || "";
             //            var player2 = prompt("Nom du joueur 2").trim() || "";
+            // Players init
             var player1 = "";
             var player2 = "";
 
-            app.newGame(player1, player2);
-            updateStatusUI();
-            checkSwitchGamePhase();
-
-
-            // Grid UI initialization
+            // Grid UI init
             var grid = app.getGrid();
             var surface = document.getElementById('renderingSurface');
             var canvas = document.getElementById('canvas');
@@ -217,6 +213,13 @@ document.dispatchEvent(ev);
             var width = 480;
             var height = width;
             var step = width / grid.size;
+            
+            app.newGame(player1, player2);
+            updateStatusUI();
+            checkSwitchGamePhase();
+
+
+            
 
             // Canvas initialization
             canvas.setAttribute('width', width);
