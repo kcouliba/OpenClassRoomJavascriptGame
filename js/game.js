@@ -28,20 +28,20 @@ var Game = {
             self.y = y;
             return (self);
         },
-        
+
         set: function(x, y) {
             this.x = x;
             this.y = y;
         },
-        
+
         add: function(position) {
             return (this.new(this.x + position.x, this.y + position.y));
         },
-        
+
         sub: function(position) {
             return (this.new(this.x - position.x, this.y - position.y));
         },
-        
+
         clone: function(rhs) {
             if (this != rhs) {
                 return (this.new(rhs.x, rhs.y));
@@ -107,18 +107,18 @@ var Game = {
         }
         return (this);
     },
-    
+
     start: function() {
         this.run = true;
         if (DEBUG) {
             console.log("Game started.");
         }
     },
-    
+
     running: function() {
         return (this.run);
     },
-    
+
     stop: function() {
         this.run = false;
         if (DEBUG) {
@@ -137,7 +137,7 @@ var Game = {
         }
         return (Object.create(this));
     },
-    
+
     /*
     ** placeElements
     ** Places elements on grid
@@ -145,13 +145,13 @@ var Game = {
     */
     placeElements: function() {
         this.placePlayers();
-//        this.placeWeapons();
+        //        this.placeWeapons();
         return (this);
     },
-    
+
     getWeaponAt: function(x, y) {
         var at = this.Position.new(x, y);
-        
+
         for (key in this.weapons) {
             if (this.weapons[key].position.equals(at)) {
                 return (this.weapons[key]);
@@ -171,7 +171,7 @@ var Game = {
 
             for (var i = 0; i < Math.floor(this.grid.size / 2); i++) {
                 if (this.grid.grid[i + (j * this.grid.size)] === Grid.CELLSTATE.FREE) {
-                    this.grid.grid[i + (j * this.grid.size)] = Grid.CELLSTATE.PLAYER;
+                    this.grid.grid[i + (j * this.grid.size)] = Grid.CELLSTATE.PLAYER1;
                     this.players[0].setPosition(i, j);
                     placed = true;
                     break ;
@@ -190,7 +190,7 @@ var Game = {
 
             for (var i = this.grid.size - 1; i > Math.floor(this.grid.size / 2); i--) {
                 if (this.grid.grid[i + (j * this.grid.size)] === Grid.CELLSTATE.FREE) {
-                    this.grid.grid[i + (j * this.grid.size)] = Grid.CELLSTATE.PLAYER;
+                    this.grid.grid[i + (j * this.grid.size)] = Grid.CELLSTATE.PLAYER2;
                     this.players[1].setPosition(i, j);
                     placed = true;
                     break ;
@@ -205,11 +205,11 @@ var Game = {
         }
         return (this);
     },
-    
+
     getPlayer: function(id) {
         return (this.players[id]);
     },
-    
+
     /*
     ** movePlayer
     ** Moves a player to a new position
@@ -220,11 +220,12 @@ var Game = {
     ** @return player : Player
     */
     movePlayer: function(player, stepx, stepy) {
+        console.log(player);
         var currentPos = this.Position.clone(player.getPosition());
         var move = this.Position.new(stepx, stepy);
         var nextPos = currentPos.add(move);
         var grid = this.grid;
-        
+
         if (DEBUG) {
             console.log("Before computing");
             console.log("Grid state ==> ");
@@ -233,7 +234,7 @@ var Game = {
             console.log("Move input is : " + move);
             console.log("Player next position should be : " + nextPos);
         }
-        
+
         if (stepx < 0) { // moving left
             if (DEBUG) {
                 console.log("Player " + player.name + " is moving left");
@@ -297,26 +298,27 @@ var Game = {
             }
         }
         // player position update
-        console.log("Previous selected player position is : " + currentPos);
         player.setPosition(nextPos.x, nextPos.y);
         // grid update
         grid.grid[currentPos.x + (currentPos.y * grid.size)] = Grid.CELLSTATE.FREE;
-        grid.grid[nextPos.x + (nextPos.y * grid.size)] = Grid.CELLSTATE.PLAYER;
+        grid.grid[nextPos.x + (nextPos.y * grid.size)] = player.id;
         if (DEBUG) {
             console.log("After computing selected player position is : " + player.getPosition());
-            console.log("Previous selected player position is : " + currentPos);
+            console.log("Previous selected player position was : " + currentPos);
         }
-        return (player);
     },
-    
+
     playerCollision: function() {
         var gap = this.players[0].getPosition().sub(this.players[1].getPosition());
-        
+
         gap.x = Math.abs(gap.x);
         gap.y = Math.abs(gap.y);
-        console.log("Players gap : " + gap);
-        if ((gap.x <= 1) && (gap.y <= 1)) {
-            gamePhase = Game.GAMEPHASE.BATTLE;
+        if (DEBUG) {
+            console.log("Players gap : " + gap);
+        }
+        if (((gap.x === 0) && (gap.y <= 1))
+            || ((gap.x <= 1) && (gap.y === 0))) {
+            this.gamePhase = Game.GAMEPHASE.BATTLE;
             return (true);
         }
         return (false);

@@ -9,6 +9,7 @@
 ** Player Class
 */
 var Player = {
+    id: -1,
     name: "",
     hp: 0,
     weapon: null,
@@ -24,7 +25,8 @@ var Player = {
     ** @param name : string
     ** @return this
     */
-    init: function(name) {
+    init: function(id, name) {
+        this.id = id;
         this.name = name;
         this.hp = 100;
         this.stance = Player.STANCE.ATTACK;
@@ -36,14 +38,13 @@ var Player = {
 
     /*
     ** new
+    ** @param id : int
     ** @param name : string (optional)
     ** @return a new instance of Player
     */
-    new: (function() {
-        return (function (name) {
-            return (Object.create(Player).init(name));
-        });
-    })(),
+    new: function (id, name) {
+        return (Object.create(Player).init(id, name));
+    },
 
     /*
     ** setStance

@@ -13,10 +13,11 @@ var Grid = {
     obstacles: 0,
     grid: [],
     CELLSTATE: {
-        FREE: 0,
-        OBSTACLE: 1,
-        PLAYER: 2,
-        WEAPON: 3
+        PLAYER1: 0,
+        PLAYER2: 1,
+        FREE: 2,
+        OBSTACLE: 3,
+        WEAPON:4
     },
     
     /*

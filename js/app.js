@@ -79,15 +79,17 @@ var app = (function() {
             }
             var weapons = weaponFactory.get(MAX_WEAPON_COUNT);
             var players = [
-                Player.new(player1Name || DEFAULT_PLAYER_NAME + "1")
+                Player.new(0, player1Name || DEFAULT_PLAYER_NAME + "1")
                 .equipWeapon(weapons[0]),
-                Player.new(player2Name || DEFAULT_PLAYER_NAME + "2")
+                Player.new(1, player2Name || DEFAULT_PLAYER_NAME + "2")
                 .equipWeapon(weapons[0])
             ];
             
             game.init(Grid.new(SIZE), weapons, players);
-            updatePlayerData(0, game.getPlayer(0));
-            updatePlayerData(1, game.getPlayer(1));
+            player1 = game.getPlayer(0);
+            player2 = game.getPlayer(1);
+            updatePlayerData(0, player1);
+            updatePlayerData(1, player2);
             game.start();
             return ([player1Data, player2Data]);
         },
@@ -107,8 +109,8 @@ var app = (function() {
             if ((playerId < 0) || (playerId > 1)) {
                 return (false);
             }
-            if ((stepX > MAX_PLAYER_MOVE) || (stepX < 0)
-                || (stepY > MAX_PLAYER_MOVE) || (stepY < 0)) {
+            if ((Math.abs(stepX) > MAX_PLAYER_MOVE)
+                || (Math.abs(stepY) > MAX_PLAYER_MOVE)) {
                 return (false);
             }
             var player = (playerId === 0) ? player1 : player2;
@@ -116,7 +118,7 @@ var app = (function() {
             //                return (false);
             //            }
             game.movePlayer(player, stepX, stepY);
-            this.gamePhase = (game.playerCollision() == true) ? Game.GAMEPHASE.BATTLE : Game.GAMEPHASE.MOVE;
+//            this.gamePhase = (game.playerCollision() == true) ? Game.GAMEPHASE.BATTLE : Game.GAMEPHASE.MOVE;
             updatePlayerData(playerId, player);
             return (true);
         },
@@ -141,6 +143,7 @@ var app = (function() {
         },
 
         getGamePhase: function () {
+            this.gamePhase = (game.playerCollision() == true) ? Game.GAMEPHASE.BATTLE : Game.GAMEPHASE.MOVE;
             return (game.gamePhase);
         },
 
