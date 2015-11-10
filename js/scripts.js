@@ -1,7 +1,6 @@
 /*
 ** scripts.js
 ** Author coulibaly.d.kevin@gmail.com
-** Date 29/10/2015
 ** A script class for running scripts
 ** Caution : All other files must have been loaded before that one
 */

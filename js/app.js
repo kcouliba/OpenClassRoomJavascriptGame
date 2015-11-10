@@ -1,16 +1,12 @@
 /*
-** TODO
-** replace prompt logic by ui data harvest (DONE)
+** TODO : create a check method game.isValidMove(player, stepX, stepY)
+** That funtion will check if the player will encounter an obstacle
+** weapon pick up will be done in function movePlayer()
 */
 
-/*
-** IIFE will return an object containing funtions needed to run the game properly
-** without granting access to datas
-*/
 var app = (function() {
+    /* Game initialization */
 
-    // Game initialization
-    
     // WeaponFactory
     var weaponFactory = {
         weapons: [
@@ -19,15 +15,15 @@ var app = (function() {
             Weapon.new("Bare hand", 5),
             Weapon.new("Fork", 8),
             Weapon.new("Club", 12),
-            Weapon.new("Hover", 14),
+            Weapon.new("Hoover", 14),
             Weapon.new("Shotgun", 30)
         ],
 
         /*
         ** get
-        ** returns an array containing weapons
+        ** Returns an array containing weapons
         ** @param count : int
-        ** @return weaponPool : weaponArray
+        ** @return Array
         */
         get: function(count) {
             var weaponPool = [];
@@ -41,14 +37,14 @@ var app = (function() {
             return (weaponPool);
         }
     };
-    
+
     var GamePlayer = {
-        id: 0,
+        id: -1,
         name: "",
         hp: "",
         weaponName: "",
         weaponDamage: "",
-        
+
         init: function(name, hp, wName, wDamage) {
             this.name = name;
             this.hp = hp;
@@ -56,48 +52,58 @@ var app = (function() {
             this.weaponDamage = wDamage;
         }
     };
-    
+
     // Game mandatory variables
     var game = Game.new();
     var player1, player2;
     var player1Data = Object.create(GamePlayer);
     var player2Data = Object.create(GamePlayer);
-    
+
     player1Data.id = 0;
     player2Data.id = 1;
-    
-    function updatePlayerData(playerId, player) {
-        var playerData = (playerId === 0) ? player1Data : player2Data;
-        
+
+    function updatePlayerData(player) {
+        var playerData = (player.id === 0) ? player1Data : player2Data;
+
         playerData.init(player.name, player.hp, player.weapon.name, player.weapon.damage);
     }
 
     return ({
+        /*
+        ** newGame
+        ** Sets a new game and returns players in an array
+        ** @param player1Name : string
+        ** @param player2Name : string
+        ** @return Array
+        */
         newGame: function(player1Name, player2Name) {
-            if (game.running()) {
+            if (game.running()) { // If a game is running stops it
                 game.stop();
             }
             var weapons = weaponFactory.get(MAX_WEAPON_COUNT);
             var players = [
-                Player.new(0, player1Name || DEFAULT_PLAYER_NAME + "1")
+                Player.new(player1Data.id, player1Name || DEFAULT_PLAYER_NAME + "1")
                 .equipWeapon(weapons[0]),
-                Player.new(1, player2Name || DEFAULT_PLAYER_NAME + "2")
+                Player.new(player2Data.id, player2Name || DEFAULT_PLAYER_NAME + "2")
                 .equipWeapon(weapons[0])
             ];
-            
+
             game.init(Grid.new(SIZE), weapons, players);
-            player1 = game.getPlayer(0);
-            player2 = game.getPlayer(1);
-            updatePlayerData(0, player1);
-            updatePlayerData(1, player2);
+            player1 = game.getPlayer(player1Data.id); // Get player1 data
+            player2 = game.getPlayer(player2Data.id); // Get player2 data
+            updatePlayerData(player1);
+            updatePlayerData(player2);
             game.start();
             return ([player1Data, player2Data]);
         },
 
         /*
-        ** TODO : create a check method game.isValidMove(player, stepX, stepY)
-        ** That funtion will check if the player will encounter an obstacle
-        ** weapon pick up will be done in function movePlayer()
+        ** playerMove
+        ** Make a player move
+        ** @param playerId : int
+        ** @param stepX : int
+        ** @param stepY : int
+        ** @return bool
         */
         playerMove: function(playerId, stepX, stepY) {
             if (!game.running()) {
@@ -114,15 +120,20 @@ var app = (function() {
                 return (false);
             }
             var player = (playerId === 0) ? player1 : player2;
-            //            if (!game.isValidMove(player, stepX, stepY)) {
-            //                return (false);
-            //            }
+            /*if (!game.isValidMove(player, stepX, stepY)) {
+                return (false);
+            }*/
             game.movePlayer(player, stepX, stepY);
-//            this.gamePhase = (game.playerCollision() == true) ? Game.GAMEPHASE.BATTLE : Game.GAMEPHASE.MOVE;
-            updatePlayerData(playerId, player);
+            updatePlayerData(player);
             return (true);
         },
 
+        /*
+        ** playerAttack
+        ** Make a player attack the other one
+        ** @param playerId : int
+        ** @return bool
+        */
         playerAttack: function(playerId) {
             if (!game.running()) {
                 return (false);
@@ -137,16 +148,27 @@ var app = (function() {
             var defender = (playerId === 0) ? player2 : player1;
             var success = attacker.attack(defender);
 
-            updatePlayerData(0, player1);
-            updatePlayerData(1, player2);
+            updatePlayerData(player1);
+            updatePlayerData(player2);
             return (success);
         },
 
+        /*
+        ** getGamePhase
+        ** Gets the game current phase
+        ** @return Game.GAMEPHASE
+        */
         getGamePhase: function () {
             this.gamePhase = (game.playerCollision() == true) ? Game.GAMEPHASE.BATTLE : Game.GAMEPHASE.MOVE;
             return (game.gamePhase);
         },
 
+        /*
+        ** isPlayerAlive
+        ** Checks if a player is alive
+        ** @param playerId : int
+        ** @return bool
+        */
         isPlayerAlive: function(playerId) {
             if (!game.running()) {
                 return (false);
@@ -156,11 +178,21 @@ var app = (function() {
             }
             return (((playerId === 0) ? player1 : player2).isAlive());
         },
-        
+
+        /*
+        ** getGrid
+        ** Fetches current grid state
+        ** @return Grid
+        */
         getGrid: function() {
             return (game.grid);
         },
-        
+
+        /*
+        ** Retrieves a player's data
+        ** @param playerId : int
+        ** @return PlayerData
+        */
         getPlayerData: function(playerId) {
             if ((playerId < 0) || (playerId > 1)) {
                 return (false);
@@ -168,15 +200,21 @@ var app = (function() {
             return ((playerId === 0) ? player1Data : player2Data)
         },
 
+        /*
+        ** getWinnerPhrase
+        ** Returns a winning phrase depending on winner's status
+        ** @param playerId : int
+        ** @return string or null
+        */
         getWinnerPhrase: function(playerId) {
             if (!game.running()) {
-                return (false);
+                return (null);
             }
             if ((playerId < 0) || (playerId > 1)) {
-                return (false);
+                return (null);
             }
             var player = (playerId === 0) ? player1Data : player2Data;
-            
+
             if (player.hp >= MAX_PLAYER_HP * .75 ) {
                 return ("awkward !!! ".toUpperCase() + player.name
                         + " you totally mastered this fight !".toUpperCase()

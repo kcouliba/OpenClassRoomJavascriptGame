@@ -1,7 +1,6 @@
 /*
 ** grid.js
 ** Author coulibaly.d.kevin@gmail.com
-** Date 29/10/2015
 ** Grid definition
 */
 
@@ -9,6 +8,8 @@
 ** Grid Class
 */
 var Grid = {
+    /* Grid attributes */
+    
     size: 0,
     obstacles: 0,
     grid: [],
@@ -19,6 +20,8 @@ var Grid = {
         OBSTACLE: 3,
         WEAPON:4
     },
+    
+    /* Grid methods */
     
     /*
     ** stateAt

@@ -1,35 +1,29 @@
 /*
 ** tests.js
 ** Author coulibaly.d.kevin@gmail.com
-** Date 24/10/2015
 ** A test class for running tests
 ** Caution : All other files must have been loaded before that one
 */
 
 var Tests = {
-    
-    /*
-    ** tests
-    ** Test pool
-    */
+
+    /* Tests attributes */
+
+    // Test pool
     tests: { },
     name: "",
-    
-    init: function(name) {
-        this.name = name;
-        return (this);
-    },
-    
+
     /*
     ** new
     ** @param name : string
-    ** Returns a Tests instance
+    ** Returns Tests
     */
-    new: (function() {
-        return (function(name) {
-            return (Object.create(Tests).init(name));
-        });
-    })(),
+    new: function(name) {
+        var self = Object.create(this);
+
+        self.name = name;
+        return (self);
+    },
 
     /*
     ** add
@@ -38,8 +32,8 @@ var Tests = {
     ** @param expected : Object
     ** @param f : function
     ** @param params : Array
-    ** @param not : boolean
-    ** @return this : Tests
+    ** @param not : bool
+    ** @return Tests
     */
     add: function(name, expected, f, params, not) {
         this.tests[name] = Tests.Test.new(name, expected, f, params, not);
@@ -81,51 +75,43 @@ var Tests = {
         console.log("");
     },
 
+    /* Tests Sub Classes */
+
     /*
     ** Test
-    ** Test Object
+    ** A test representation as object
     */
     Test: {
+        /* Test attributes */
+
         name: "",
         result: 0, // Return of the user's function is stored at execution to access it without running the function again
         expected: 0,
         not: false, // If a the test expects the comparison to be false
         params: [ ], // User's function parameters
 
-        /*
-        ** init
-        ** constructor
-        ** @param name : string
-        ** @param expected : value
-        ** @param funct : function
-        ** @param params : Array
-        ** @param not : boolean
-        ** @return this : Test
-        */
-        init: function(name, expected, funct, params, not) {
-            this.name = name || this.name;
-            this.expected = expected || this.expected;
-            this.funct = funct || this.funct;
-            this.params = params || this.params;
-            this.not = not || this.not;
-            return (this);
-        },
+        /* Test methods */
 
         /*
         ** new
         ** Returns a Test instance
-        ** @return test Object
         ** @param name : string
         ** @param expected : Object
         ** @param f : function
         ** @param params : Array
-        ** @param not : boolean
+        ** @param not : bool
+        ** @return Test
         */
-        new: (function() {
-            return (function(name, expected, f, params, not) {
-                return (Object.create(Tests.Test).init(name, expected, f, params, not));
-            });
-        })(),
+        new: function(name, expected, funct, params, not) {
+            var self = Object.create(this);
+
+            self.name = name || self.name;
+            self.expected = expected || self.expected;
+            self.funct = funct || self.funct;
+            self.params = params || self.params;
+            self.not = not || self.not;
+            return (self);
+        },
 
         /*
         ** funct
@@ -138,7 +124,7 @@ var Tests = {
         /*
         ** run
         ** Runs the test and returns a comparison between expected and result
-        ** @return : boolean
+        ** @return bool
         */
         run: function() {
             if (this.params.length > 0) {

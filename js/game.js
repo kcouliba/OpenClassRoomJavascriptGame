@@ -1,11 +1,12 @@
 /*
 ** game.js
 ** Author coulibaly.d.kevin@gmail.com
-** Date 29/10/2015
 ** A game class
 */
 
 var Game = {
+    /* Game attributes */
+
     GAMEPHASE : {
         MOVE: 0,
         BATTLE: 1
@@ -16,11 +17,24 @@ var Game = {
     players: [],
     gamePhase: null,
 
-    // Sub class Position
+    /* Game sub classes */
+
+    // Position sub class
     Position: {
+        /* Position attributes */
+
         x: 0,
         y: 0,
 
+        /* Position methods */
+
+        /*
+        ** new
+        ** Returns an instance of Position
+        ** @param x : Number
+        ** @param y : Number
+        ** @return Position
+        */
         new: function(x, y) {
             var self = Object.create(this);
 
@@ -29,48 +43,83 @@ var Game = {
             return (self);
         },
 
+        /*
+        ** set
+        ** Defines x and y values
+        ** @param x : Number
+        ** @param y : Number
+        */
         set: function(x, y) {
             this.x = x;
             this.y = y;
         },
 
+        /*
+        ** add
+        ** Adds Position to the instance
+        ** @param position : Position Object
+        ** @return Position
+        */
         add: function(position) {
             return (this.new(this.x + position.x, this.y + position.y));
         },
 
+        /*
+        ** sub
+        ** Subs Position to the instance
+        ** @param position : Position Object
+        ** @return Position
+        */
         sub: function(position) {
             return (this.new(this.x - position.x, this.y - position.y));
         },
 
+        /*
+        ** clone
+        ** Clones a Position instance
+        ** @param rhs : Position Object
+        ** @return Position
+        */
         clone: function(rhs) {
             if (this != rhs) {
                 return (this.new(rhs.x, rhs.y));
             }
         },
 
+        /*
+        ** equals
+        ** Checks if position values are equals to another position
+        ** @param position : Position Object
+        ** @return bool
+        */
         equals: function(position) {
             return ((this.x === position.x) && (this.y === position.y));
         },
 
+        /*
+        ** toString
+        ** Position instance as string
+        ** @return string
+        */
         toString: function () {
             return ("(" + this.x + ", " + this.y + ")");
         }
     },
 
-    // Sub class of a game element with element position
+    // Element sub class
     Element: {
+        /* Element attributes */
+
         position: null,
 
-        setPosition: function (x, y) {
-            this.position.x = x;
-            this.position.y = y;
-            return (this);
-        },
+        /* Element methods */
 
-        getPosition: function () {
-            return (this.position);
-        },
-
+        /*
+        ** new
+        ** Creates new Element instance
+        ** @param object : Object
+        ** @return Element
+        */
         new: function(object) {
             var self = Object.create(this);
 
@@ -79,7 +128,43 @@ var Game = {
             }
             self.position = Game.Position.new(0, 0);
             return (self);
+        },
+
+        /*
+        ** setPosition
+        ** Sets element's position
+        ** @param x : Number
+        ** @param y : Number
+        ** @return Element
+        */
+        setPosition: function (x, y) {
+            this.position.x = x;
+            this.position.y = y;
+            return (this);
+        },
+
+        /*
+        ** getPosition
+        ** Gets element's position
+        ** @return Position
+        */
+        getPosition: function () {
+            return (this.position);
         }
+    },
+
+    /* Game methods */
+    
+    /*
+    ** new
+    ** Returns a new Game instance
+    ** @return this : Game instance
+    */
+    new: function() {
+        if (DEBUG) {
+            console.log("A new game has been created.");
+        }
+        return (Object.create(this));
     },
 
     /*
@@ -94,10 +179,10 @@ var Game = {
         this.weapons = [];
         this.players = [];
         this.grid = grid;
-        for (var i = 0; i < weapons.length; i++) {
+        for (var i = 0; i < weapons.length; i++) { // Tranforms Weapon into Element object
             this.weapons.push(this.Element.new(weapons[i]));
         }
-        for (var i = 0; i < players.length; i++) {
+        for (var i = 0; i < players.length; i++) { // Tranforms Player into Element object
             this.players.push(this.Element.new(players[i]));
         }
         this.placeElements();
@@ -108,6 +193,10 @@ var Game = {
         return (this);
     },
 
+    /*
+    ** start
+    ** Set the run attributes to true
+    */
     start: function() {
         this.run = true;
         if (DEBUG) {
@@ -115,10 +204,19 @@ var Game = {
         }
     },
 
+    /*
+    ** running
+    ** Informs if the game is currently running
+    ** @return bool
+    */
     running: function() {
         return (this.run);
     },
 
+    /*
+    ** stop
+    ** Set the run attribute to false
+    */
     stop: function() {
         this.run = false;
         if (DEBUG) {
@@ -127,28 +225,21 @@ var Game = {
     },
 
     /*
-    ** new
-    ** Returns a new Game instance
-    ** @return this : Game instance
-    */
-    new: function() {
-        if (DEBUG) {
-            console.log("A new game has been created.");
-        }
-        return (Object.create(this));
-    },
-
-    /*
     ** placeElements
     ** Places elements on grid
-    ** @return this : Game instance
     */
     placeElements: function() {
         this.placePlayers();
         //        this.placeWeapons();
-        return (this);
     },
 
+    /*
+    ** getWeaponAt
+    ** Gets weapon at coordinates
+    ** @param x : int
+    ** @param y : int
+    ** @return Weapon or null
+    */
     getWeaponAt: function(x, y) {
         var at = this.Position.new(x, y);
 
@@ -157,12 +248,12 @@ var Game = {
                 return (this.weapons[key]);
             }
         }
+        return (null);
     },
 
     /*
     ** placePlayers
     ** Places players on grid
-    ** @return this : Game instance
     */
     placePlayers: function() {
         // Place player1
@@ -203,9 +294,14 @@ var Game = {
                 break ;
             }
         }
-        return (this);
     },
 
+    /*
+    ** getPlayer
+    ** Returns player corresponding to a given id
+    ** @param id : int
+    ** @return Player
+    */
     getPlayer: function(id) {
         return (this.players[id]);
     },
@@ -217,16 +313,16 @@ var Game = {
     ** @param id : int
     ** @param stepx : int
     ** @param stepy : int
-    ** @return player : Player
+    ** @return Player
     */
     movePlayer: function(player, stepx, stepy) {
-        console.log(player);
         var currentPos = this.Position.clone(player.getPosition());
         var move = this.Position.new(stepx, stepy);
         var nextPos = currentPos.add(move);
         var grid = this.grid;
 
         if (DEBUG) {
+            console.log(player);
             console.log("Before computing");
             console.log("Grid state ==> ");
             console.log(grid);
@@ -308,6 +404,11 @@ var Game = {
         }
     },
 
+    /*
+    ** playerCollision
+    ** Checks if players collide each other
+    ** @return bool
+    */
     playerCollision: function() {
         var gap = this.players[0].getPosition().sub(this.players[1].getPosition());
 

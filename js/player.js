@@ -1,14 +1,15 @@
 /*
 ** player.js
 ** Author coulibaly.d.kevin@gmail.com
-** Date 29/10/2015
-** Player definition
+** Player Class
 */
 
 /*
 ** Player Class
 */
 var Player = {
+    /* Player attributes */
+    
     id: -1,
     name: "",
     hp: 0,
@@ -19,11 +20,13 @@ var Player = {
         DEFENSE: 1
     },
 
+    /* Player methods */
+    
     /*
     ** init
     ** Constructor
     ** @param name : string
-    ** @return this
+    ** @return Player
     */
     init: function(id, name) {
         this.id = id;
@@ -38,9 +41,10 @@ var Player = {
 
     /*
     ** new
+    ** Creates new Player instance
     ** @param id : int
     ** @param name : string (optional)
-    ** @return a new instance of Player
+    ** @return Player
     */
     new: function (id, name) {
         return (Object.create(Player).init(id, name));
@@ -57,13 +61,11 @@ var Player = {
             console.log("Player " + this.name + " switched stance to "
                         + ((this.stance === Player.STANCE.DEFENSE) ? "defense" : "attack") + ".");
         }
-        return (this);
     },
 
     /*
     ** dropWeapon
     ** Drops current weapon (set to null)
-    ** @return this
     */
     dropWeapon: function() {
         this.weapon = null;
@@ -77,7 +79,6 @@ var Player = {
     ** equipWeapon
     ** Drops current weapon and equip new one
     ** @param weapon : Weapon
-    ** @return this
     */
     equipWeapon: function(weapon) {
         this.dropWeapon();
@@ -93,7 +94,7 @@ var Player = {
     ** attackPlayer
     ** Attacks targeted player
     ** @param player : Player
-    ** @return : boolean
+    ** @return bool
     */
     attack: function(player) {
         if (DEBUG) {
@@ -114,8 +115,8 @@ var Player = {
     /*
     ** takeDamage
     ** Decreases current hp by damage value
-    ** @param damage : integer
-    ** @return : boolean
+    ** @param damage : int
+    ** @return bool
     */
     takeDamage: function(damage) {
         if (!this.isAlive()) {
@@ -136,8 +137,8 @@ var Player = {
 
     /*
     ** isAlive
-    ** Checks if player hp are not down
-    ** @return boolean
+    ** Checks if player hp are above 0
+    ** @return bool
     */
     isAlive: function() {
         return (this.hp > 0);

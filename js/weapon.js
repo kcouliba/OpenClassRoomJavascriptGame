@@ -1,7 +1,6 @@
 /*
 ** weapon.js
 ** Author coulibaly.d.kevin@gmail.com
-** Date 29/10/2015
 ** Weapon definition
 */
 
@@ -9,15 +8,19 @@
 ** Weapon Class
 */
 var Weapon = {
+    /* Weapon attributes */
+    
     name: "",
     damage: 0,
 
+    /* Weapon methods */
+    
     /*
     ** init
     ** Constructor
     ** @param name : string
     ** @param damage : Number
-    ** @return this
+    ** @return Weapon
     */
     init: function(name, damage) {
         this.name = name;
@@ -28,9 +31,10 @@ var Weapon = {
     
     /*
     ** new
+    ** Creates a new Weapon instance
     ** @param name : string
     ** @param damage : int
-    ** @return a new instance of Weapon
+    ** @return Weapon
     */
     new: (function() {
         return (function (name, damage) {
