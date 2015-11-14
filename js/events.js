@@ -21,6 +21,7 @@ document.dispatchEvent(ev);
 ** for each function that may call an error :
 **      -validateMove
 **   Review the code an determine better variables name
+** Think about a better code organization and separation between events and UI
 */
 
 /*
@@ -33,7 +34,10 @@ document.dispatchEvent(ev);
     var GameInterface = {
         playersDOM: null,
         dataPlayers: null,
+        currentPlayer: null,
+        waitingPlayer: null,
         surface: null,
+        gamePhase: null,
 
         /*
         ** DOMPlayer
@@ -101,6 +105,23 @@ document.dispatchEvent(ev);
 
             reset: function () {
                 return (this.init());
+            }
+        },
+
+        /*
+        ** CurrentPlayer
+        ** An object that stores the current playing player
+        */
+        CurrentPlayer: {
+            data: null,
+            DOM: null,
+
+            set: function(data, DOM) {
+                var self = Object.create(this);
+
+                self.data = data;
+                self.DOM = DOM;
+                return (self);
             }
         },
 
@@ -199,8 +220,10 @@ document.dispatchEvent(ev);
                 Object.create(GameInterface.DataPlayer).init(),
                 Object.create(GameInterface.DataPlayer).init()
             ];
-            this.surface = Object.create(GameInterface.RenderingSurface).init();
+            this.currentPlayer = this.CurrentPlayer.set(this.dataPlayers[0], this.playersDOM[0]);
+            this.waitingPlayer = this.CurrentPlayer.set(this.dataPlayers[1], this.playersDOM[1]);
             this.initEvents();
+            this.surface = Object.create(GameInterface.RenderingSurface).init();
             //            return (this);
         },
 
@@ -263,49 +286,29 @@ document.dispatchEvent(ev);
         ** @param moveReadyButton : Object (ready button)
         ** @param id : int (player id)
         */
-        initMoveReadyEvent: function(playerDOM, dataPlayer, moveReadyButton, id) {
+        initMoveReadyEvent: function(moveReadyButton, id) {
             var self = this;
 
             moveReadyButton.addEventListener('click', function() {
-                var move = Game.Position.clone(dataPlayer.moveDirection);
+                var currentPlayerData = self.dataPlayers[id];
+                //                var currentPlayerDOM = self.playersDOM[id];
+                //                var waitingPlayerDOM = (id === 0) ? self.playersDOM[1] : self.playersDOM[0];
+                var move = Game.Position.clone(currentPlayerData.moveDirection);
 
-                dataPlayer.moveDirection.x *= dataPlayer.moveStep;
-                dataPlayer.moveDirection.y *= dataPlayer.moveStep;
-                // Check if both ready buttons have been activated
-                // Then trigger the move action
-                //                console.log(dataPlayer.moveDirection);
-                //                console.log(dataPlayer.isReady);
-
-                if (dataPlayer.moveDirection.x != dataPlayer.moveDirection.y) { // a direction and step has been set
-                    if (1) { // move is ok
-                        dataPlayer.isReady = true;
-                        playerDOM.moveControls.className += " hidden";
-                        this.setAttribute('disabled', "disabled");
-                        this.textContent = "Player is ready";
-                        self.triggerMoveAction();
-                    } else {
-                        // Notice the player he entered an illegal move
-                    }
+                currentPlayerData.moveDirection.x *= currentPlayerData.moveStep;
+                currentPlayerData.moveDirection.y *= currentPlayerData.moveStep;
+                if (currentPlayerData.moveDirection.x != currentPlayerData.moveDirection.y) { // a direction and step has been set, move is ok 
+                    currentPlayerData.isReady = true;
+                    self.triggerMoveAction(currentPlayerData);
                 }
             });
         },
 
-        triggerMoveAction: function() {
-            if (this.dataPlayers[0].isReady && this.dataPlayers[1].isReady) {
-                console.log(this.dataPlayers[0]);
-                console.log(this.dataPlayers[1]);
-                console.log("Let's do a move");
-
-                app.playerMove(0, this.dataPlayers[0].moveDirection.x, this.dataPlayers[0].moveDirection.y);
-                app.playerMove(1, this.dataPlayers[1].moveDirection.x, this.dataPlayers[1].moveDirection.y);
-
-                for (var i = 0; i < 2; i++) {
-                    this.dataPlayers[i].reset();
-                    this.playersDOM[i].moveControls.className = this.playersDOM[i].moveControls.className.replace(/ hidden/, "");
-                    this.playersDOM[i].moveActionReady[0].textContent = "Ready";
-                }
-                this.update();
-            }
+        triggerMoveAction: function(player) {
+            app.playerMove(player.id, player.moveDirection.x, player.moveDirection.y);
+            player.reset();
+            this.playersDOM[player.id].moveActionReady[0].textContent = "Ready";
+            this.update();
         },
 
         /*
@@ -342,6 +345,7 @@ document.dispatchEvent(ev);
             document.addEventListener('keypress', function(evt) {
                 if (evt.which == 13) { // Enter key
                     app.newGame("", "");
+                    self.gamePhase = app.getGamePhase();
                     self.update();
                 }
             });
@@ -361,7 +365,7 @@ document.dispatchEvent(ev);
                     dataPlayer.setId(id);
                     self.initDirectionEvent(playerDOM, dataPlayer, moveReadyButton, id);
                     self.initStepEvent(playerDOM, dataPlayer, moveReadyButton, id);
-                    self.initMoveReadyEvent(playerDOM, dataPlayer, moveReadyButton, id);
+                    self.initMoveReadyEvent(moveReadyButton, id);
                     self.initAttackDefenseEvent(dataPlayer, attackButton, defendButton)
                     self.updateReadyButtonStatus(dataPlayer, moveReadyButton);
                 })(id);
@@ -369,11 +373,11 @@ document.dispatchEvent(ev);
         },
 
         /*
-        ** checkSwitchGamePhase
-        ** Checking function
+        ** switchGamePhase
+        ** Watches if the gamePhase Changed
         */
-        checkSwitchGamePhase: function() {
-            if (app.getGamePhase() === Game.GAMEPHASE.BATTLE) {
+        switchGamePhase: function() {
+            if (app.getGamePhase() !== this.gamePhase) {
                 var moveButtonsDiv = [
                     document.getElementById('player1').getElementsByClassName('playerActionMove')[0],
                     document.getElementById('player2').getElementsByClassName('playerActionMove')[0]
@@ -386,14 +390,22 @@ document.dispatchEvent(ev);
                     document.getElementById('player1').getElementsByClassName('playerMove')[0],
                     document.getElementById('player2').getElementsByClassName('playerMove')[0],
                 ];
-                
+
                 for (var i = 0; i < moveControls.length; i++) {
                     moveControls[i].className += " hidden";
                 }
                 for (var i = 0; i < battleButtonsDiv.length; i++) {
                     battleButtonsDiv[i].className = moveButtonsDiv[i].className.replace(/hidden/, "");
                 }
+                this.gamePhase = app.getGamePhase();
             }
+        },
+
+        switchPlayer: function() {
+            var player = this.currentPlayer;
+
+            this.currentPlayer = this.waitingPlayer;
+            this.waitingPlayer = player;
         },
 
         updateGrid: function() {
@@ -427,7 +439,14 @@ document.dispatchEvent(ev);
         },
 
         update: function() {
-            this.checkSwitchGamePhase();
+            var gamePhase = this.gamePhase;
+
+            this.switchGamePhase();
+            this.switchPlayer();
+            // Remove current player control display
+            this.currentPlayer.DOM.self.style.display = "none";
+            // Activate opponent player control display
+            this.waitingPlayer.DOM.self.style.display = "";
             this.updateStatuses();
             this.updateGrid();
             console.log(app.getGrid().grid);
