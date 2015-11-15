@@ -21,7 +21,7 @@
                 <aside id="controlInterface" class="col-md-4">
                     <section id="playerStatuses" class="row">
                         <div class="col-md-12">
-                            <section id="player1" class="row">
+                            <section id="player1" class="row playerUI">
                                 <div class="col-md-12">
                                     <section class="row well well-sm text-center playerStatus">
                                         <p class="col-md-8 playerName">Player 1 Name</p>
@@ -34,45 +34,22 @@
                                             <p class="row playerWeaponDamage">Weapon Damage</p>
                                         </div>
                                     </section>
-                                    <section class="row text-center playerMove">
-                                        <div class="col-md-12">
-                                            <div class="row moveIntructions">
-                                                <p class="col-md-6">Direction</p>
-                                                <p class="col-md-6">Step</p>
-                                            </div>
-                                            <!--                                            TODO : center button groups-->
-                                            <div class="row">
-                                                <div class="col-md-7 btn-group playerMoveDirection" role="group">
-                                                    <button type="button" class="btn btn-default playerMoveUp">U</button>
-                                                    <button type="button" class="btn btn-default playerMoveDown">D</button>
-                                                    <button type="button" class="btn btn-default playerMoveLeft">L</button>
-                                                    <button type="button" class="btn btn-default playerMoveRight">R</button>
-                                                </div>
-                                                <div class="col-md-5 btn-group playerMoveStep" role="group">
-                                                    <button type="button" class="btn btn-default playerStep1">1</button>
-                                                    <button type="button" class="btn btn-default playerStep2">2</button>
-                                                    <button type="button" class="btn btn-default playerStep3">3</button>
-                                                </div>
-                                            </div>
-                                            <button type="button" class="col-md-12 btn btn-warning playerActionReadyMove">Ready</button>
-                                        </div>
-                                    </section>
-                                    <br/>
                                     <section class="row playerAction">
-                                        <div class="playerActionMove">
-                                        </div>
-                                        <div class="hidden playerActionBattle">
-                                            <button type="button" class="col-md-5 btn btn-info playerActionBattleAttack">Attack</button>
-                                            <button type="button" class="col-md-5 col-md-offset-2 btn btn-info playerActionBattleDefend">Defend</button>
+                                        <div class="playerActionBattle hidden">
+                                            <input type="radio" class="col-md-5 btn btn-info" id="actionAttackPlayer1" name="actionPlayer1" value="0" />
+                                            <input type="radio" class="col-md-5 col-md-offset-2 btn btn-info" id="actionDefendPlayer1" name="actionPlayer1" value="1" />
+                                            <!--
+<button type="button" class="col-md-5 btn btn-info playerActionBattleAttack">Attack</button>
+<button type="button" class="col-md-5 col-md-offset-2 btn btn-info playerActionBattleDefend">Defend</button>
+-->
                                         </div>
                                     </section>
                                 </div>
                             </section>
-                            <hr />
-                            <section id="player2" class="row">
+                            <section id="player2" class="row playerUI">
                                 <div class="col-md-12">
                                     <section class="row well well-sm text-center playerStatus">
-                                        <p class="col-md-8 playerName">Player 1 Name</p>
+                                        <p class="col-md-8 playerName">Player 2 Name</p>
                                         <p class="col-md-4 playerHP">Player HP</p>
                                     </section>
                                     <section class="row playerWeapon text-left">
@@ -82,39 +59,56 @@
                                             <p class="row playerWeaponDamage">Weapon Damage</p>
                                         </div>
                                     </section>
-                                    <section class="row text-center playerMove">
-                                        <div class="col-md-12">
-                                            <div class="row moveIntructions">
-                                                <p class="col-md-6">Direction</p>
-                                                <p class="col-md-6">Step</p>
-                                            </div>
-                                            <!--                                            TODO : center button groups-->
-                                            <div class="row">
-                                                <div class="col-md-7 btn-group playerMoveDirection" role="group">
-                                                    <button type="button" class="btn btn-default playerMoveUp">U</button>
-                                                    <button type="button" class="btn btn-default playerMoveDown">D</button>
-                                                    <button type="button" class="btn btn-default playerMoveLeft">L</button>
-                                                    <button type="button" class="btn btn-default playerMoveRight">R</button>
-                                                </div>
-                                                <div class="col-md-5 btn-group playerMoveStep" role="group">
-                                                    <button type="button" class="btn btn-default playerStep1">1</button>
-                                                    <button type="button" class="btn btn-default playerStep2">2</button>
-                                                    <button type="button" class="btn btn-default playerStep3">3</button>
-                                                </div>
-                                                <button type="button" class="col-md-12 btn btn-warning playerActionReadyMove">Ready</button>
-                                            </div>
-                                        </div>
-                                    </section>
-                                    <br/>
                                     <section class="row playerAction">
-                                        <div class="playerActionMove">
-                                        </div>
-                                        <div class="hidden playerActionBattle">
-                                            <button type="button" class="col-md-5 btn btn-info playerActionBattleAttack">Attack</button>
-                                            <button type="button" class="col-md-5 col-md-offset-2 btn btn-info playerActionBattleDefend">Defend</button>
+                                        <div class="playerActionBattle hidden">
+                                            <input type="radio" class="col-md-5 btn btn-info" id="actionAttackPlayer2" name="actionPlayer2" value="0" />
+                                            <input type="radio" class="col-md-5 col-md-offset-2 btn btn-info" id="actionDefendPlayer2" name="actionPlayer2" value="1" />
+                                            <!--
+<button type="button" class="col-md-5 btn btn-info playerActionBattleAttack">Attack</button>
+<button type="button" class="col-md-5 col-md-offset-2 btn btn-info playerActionBattleDefend">Defend</button>
+-->
                                         </div>
                                     </section>
                                 </div>
+                            </section>
+                            <section class="row text-center playerMove">
+                                <div class="col-md-12 playerMoveInputs">
+                                    <div class="row moveIntructions">
+                                        <p class="col-md-6">Direction</p>
+                                        <p class="col-md-6">Step</p>
+                                    </div>
+                                    <!--                                            TODO : center button groups-->
+                                    <div class="row">
+                                        <div class="col-md-7 btn-group playerMoveDirection" role="group">
+                                            <label for="directionUp">Up</label>
+                                            <input type="radio" id="directionUp" name="playerDirection" value="0,-1" />
+                                            <label for="directionDown">Down</label>
+                                            <input type="radio" id="directionDown" name="playerDirection" value="0,1" />
+                                            <label for="directionLeft">Left</label>
+                                            <input type="radio" id="directionLeft" name="playerDirection" value="-1, 0" />
+                                            <label for="directionRight">Right</label>
+                                            <input type="radio" id="directionRight" name="playerDirection" value="1, 0" />
+                                            <!--                                                    <button type="button" class="btn btn-default playerMoveUp">U</button>-->
+                                            <!--                                                    <button type="button" class="btn btn-default playerMoveDown">D</button>-->
+                                            <!--                                                    <button type="button" class="btn btn-default playerMoveLeft">L</button>-->
+                                            <!--                                                    <button type="button" class="btn btn-default playerMoveRight">R</button>-->
+                                        </div>
+                                        <div class="col-md-5 btn-group playerMoveStep" role="group">
+                                            <label for="step1">1</label>
+                                            <input type="radio" id="step1" name="playerStep" value="1" />
+                                            <label for="step2">2</label>
+                                            <input type="radio" id="step2" name="playerStep" value="2" />
+                                            <label for="step3">3</label>
+                                            <input type="radio" id="step3" name="playerStep" value="3" />
+                                            <!--
+<button type="button" class="btn btn-default playerStep1">1</button>
+<button type="button" class="btn btn-default playerStep2">2</button>
+<button type="button" class="btn btn-default playerStep3">3</button>
+-->
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="col-md-12 btn btn-warning playerActionReady">Ready</button>
                             </section>
                         </div>
                     </section>

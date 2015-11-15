@@ -6,3 +6,6 @@ img[class*="thumbnail"] {
     width: 64px;
     height: 64px;
 }
+
+.playerUI input[type*="radio"] {
+}

@@ -152,6 +152,25 @@ var app = (function() {
             updatePlayerData(player2);
             return (success);
         },
+        
+        /*
+        ** playerSetStance
+        ** Make a player move its stance mode
+        ** @param playerId : int
+        ** @param stance : int
+        */
+        playerSetStance: function(playerId, stance) {
+            if (!game.running()) {
+                return (false);
+            }
+            if (!game.gamePhase === Game.GAMEPHASE.BATTLE) {
+                return (false);
+            }
+            if ((playerId < 0) || (playerId > 1)) {
+                return (false);
+            }
+            game.getPlayer(playerId).setStance(stance);
+        },
 
         /*
         ** getGamePhase

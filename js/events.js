@@ -31,20 +31,115 @@ document.dispatchEvent(ev);
 
 // IIFE encapsulation
 (function(app) {
-    var GameInterface = {
-        playersDOM: null,
-        dataPlayers: null,
-        currentPlayer: null,
-        waitingPlayer: null,
-        surface: null,
-        gamePhase: null,
+    var UI = {
+        /* static attributes */
+        PLAYER: {
+            PLAYER1: 0,
+            PLAYER2: 1,
+        },
+        DISPLAY: {
+            MOVE: 0,
+            BATTLE: 1
+        },
+
+        /* attributes */
+        renderingSurface: null,
+        displayMode: null,
+        players: [],
+
+        init: function() {
+            var self = Object.create(this);
+
+            self.renderingSurface = UI.RenderingSurface.init();
+            self.displayMode = UI.DISPLAY.MOVE;
+            self.players = [
+                UI.PlayerUI.new(UI.PLAYER.PLAYER1 + 1),
+                UI.PlayerUI.new(UI.PLAYER.PLAYER2 + 1)
+            ];
+            return (self);
+        },
+
+        /* methods */
 
         /*
-        ** DOMPlayer
-        ** An object that stores player related DOM elements
+        ** showPlayer
+        ** Shows selected player interface
         */
-        DOMPlayer: {
-            self: null,
+        showPlayer: function(playerId) {
+            this.players[playerId].container.style.display = "";
+            this.players[playerId].container.style.visibility = "";
+        },
+
+        /*
+        ** hidePlayer
+        ** Hides selected player interface
+        */
+        hidePlayer: function(playerId) {
+            this.players[playerId].container.style.display = "none";
+            this.players[playerId].container.style.visibility = "hidden";
+        },
+
+        /*
+        ** togglePlayer
+        ** Switches from currently displayed player interface to next player
+        */
+        togglePlayer: function() {
+            if (this.players[UI.PLAYER.PLAYER2].container.style.display == "none") {
+                this.hidePlayer(UI.PLAYER.PLAYER1);
+                this.showPlayer(UI.PLAYER.PLAYER2);
+            } else {
+                this.hidePlayer(UI.PLAYER.PLAYER2);
+                this.showPlayer(UI.PLAYER.PLAYER1);
+            }
+        },
+
+        update: function() {
+            if (app.getGamePhase() === Game.GAMEPHASE.BATTLE) {
+                this.displayMode = UI.DISPLAY.BATTLE;
+                this.updateBattleDisplay();
+            }
+            this.renderingSurface.update();
+            this.updatePlayersStatus();
+        },
+
+        updateBattleDisplay: function() {
+            var actionBattleDisplay = document.getElementsByClassName('playerActionBattle');
+            var moveInputDisplay = document.getElementsByClassName('playerMoveInputs');
+
+            for (var i = 0; i < actionBattleDisplay.length; i++) {
+                actionBattleDisplay[i].className = actionBattleDisplay[i].className.replace(/ hidden/, "");
+            }
+            for (var i = 0; i < moveInputDisplay.length; i++) {
+                moveInputDisplay[i].className += " hidden";
+            }
+            this.showPlayer(UI.PLAYER.PLAYER1);
+            this.showPlayer(UI.PLAYER.PLAYER2);
+        },
+
+        updatePlayersStatus: function() {
+            var self = this;
+            var player;
+
+            for (var i = 0; i < this.players.length; i++) {
+                (function(i) {
+                    player = app.getPlayerData(i);
+                    self.players[i].name.textContent = player.name;
+                    self.players[i].hp.textContent = player.hp + " HP";
+                    self.players[i].weaponName.textContent = player.weaponName;
+                    self.players[i].weaponDamage.textContent = player.weaponDamage + " DMG";
+                    self.players[i].weaponImage.src = ("../css/assets/images/" + player.weaponName.toLowerCase() + ".png").replace(/ /, "_");
+                })(i);
+            }
+        },
+
+        /* sub classes */
+
+        /*
+        ** PlayerUI
+        ** An object that represents player related DOM elements
+        */
+        PlayerUI: {
+            container: null,
             name: null,
             hp: null,
             weaponName: null,
@@ -57,70 +152,21 @@ document.dispatchEvent(ev);
             attacks: null,
             defends: null,
 
-            init: function(id) {
-                this.self = document.getElementById(id);
-                this.name = this.self.getElementsByClassName('playerName')[0];
-                this.hp = this.self.getElementsByClassName('playerHP')[0];
-                this.weaponName = this.self.getElementsByClassName('playerWeaponName')[0];
-                this.weaponDamage = this.self.getElementsByClassName('playerWeaponDamage')[0];
-                this.weaponImage = this.self.getElementsByClassName('playerWeaponImage')[0];
-                this.moveControls = this.self.getElementsByClassName('playerMove')[0];
-                this.direction = this.self.getElementsByClassName('playerMoveDirection');
-                this.step = this.self.getElementsByClassName('playerMoveStep');
-                this.moveActionReady = this.self.getElementsByClassName('playerActionReadyMove');
-                this.attacks = this.self.getElementsByClassName('playerActionBattleAttack');
-                this.defends = this.self.getElementsByClassName('playerActionBattleDefend');
-                return (this);
-            }
-        },
-
-        /*
-        ** DataPlayer
-        ** An object that stores player related data
-        */
-        DataPlayer: {
-            id: -1,
-            moveDirection: Game.Position.new(0, 0),
-            moveStep: 0,
-            isReady: null,
-            stance: -1,
-
-            init: function() {
-                this.moveDirection = Game.Position.new(0, 0);
-                this.moveStep = 0;
-                this.isReady = false;
-                return (this);
-            },
-
-            setId: function(id) {
-                this.id = id;
-            },
-
-            setStance: function(stance) {
-                if ((stance != Player.STANCE.ATTACK) 
-                    && (stance != Player.STANCE.DEFENSE))
-                    stance = Player.STANCE.ATTACK;
-                this.stance = stance;
-            },
-
-            reset: function () {
-                return (this.init());
-            }
-        },
-
-        /*
-        ** CurrentPlayer
-        ** An object that stores the current playing player
-        */
-        CurrentPlayer: {
-            data: null,
-            DOM: null,
-
-            set: function(data, DOM) {
+            new: function(id) {
                 var self = Object.create(this);
 
-                self.data = data;
-                self.DOM = DOM;
+                self.container = document.getElementById("player" + id);
+                self.name = self.container.getElementsByClassName('playerName')[0];
+                self.hp = self.container.getElementsByClassName('playerHP')[0];
+                self.weaponName = self.container.getElementsByClassName('playerWeaponName')[0];
+                self.weaponDamage = self.container.getElementsByClassName('playerWeaponDamage')[0];
+                self.weaponImage = self.container.getElementsByClassName('playerWeaponImage')[0];
+                self.moveControls = self.container.getElementsByClassName('playerMove')[0];
+                self.direction = self.container.getElementsByClassName('playerMoveDirection');
+                self.step = self.container.getElementsByClassName('playerMoveStep');
+                self.moveActionReady = self.container.getElementsByClassName('playerActionReadyMove');
+                self.attacks = self.container.getElementsByClassName('playerActionBattleAttack');
+                self.defends = self.container.getElementsByClassName('playerActionBattleDefend');
                 return (self);
             }
         },
@@ -130,6 +176,7 @@ document.dispatchEvent(ev);
         ** Surface which graphics elements are displayed on
         */
         RenderingSurface: {
+            /* Mainly for debug */
             COLOR: {
                 RED: "rgb(255, 0, 0)",
                 GREEN: "rgb(0, 255, 0)",
@@ -137,14 +184,16 @@ document.dispatchEvent(ev);
                 YELLOW: "rgb(255, 255, 0)",
                 BLACK: "rgb(0, 0, 0)"
             },
-            width: 0,
-            height: 0,
             surface: null,
             canvas: null,
             ctx: null,
             width: 0,
             height: 0,
 
+            /*
+            ** init
+            ** initializes rendering surface
+            */
             init: function() {
                 this.surface = document.getElementById('renderingSurface');
                 this.canvas = document.getElementById('canvas');
@@ -177,26 +226,25 @@ document.dispatchEvent(ev);
                 this.canvas.style.height = this.height + "px";
                 this.canvas.style.marginLeft = ((this.surface.clientWidth - this.width) / 2) + "px"; // Centering
                 this.canvas.style.marginTop = ((this.surface.clientHeight - this.height) / 2) + "px"; // Centering
-
                 for (var j = 0; j < grid.size; j++) {
                     for (var i = 0; i < grid.size; i++) {
                         if (grid.grid[i + (j * grid.size)] === Grid.CELLSTATE.FREE) {
-                            this.ctx.fillStyle = GameInterface.RenderingSurface.COLOR.GREEN;
+                            this.ctx.fillStyle = UI.RenderingSurface.COLOR.GREEN;
                             this.ctx.fillRect(i * step, j * step, step, step);
                         } else if (grid.grid[i + (j * grid.size)] === Grid.CELLSTATE.OBSTACLE) {
-                            this.ctx.fillStyle = GameInterface.RenderingSurface.COLOR.RED;
+                            this.ctx.fillStyle = UI.RenderingSurface.COLOR.RED;
                             this.ctx.fillRect(i * step, j * step, step, step);
                         } else if (grid.grid[i + (j * grid.size)] === Grid.CELLSTATE.WEAPON) {
-                            this.ctx.fillStyle = GameInterface.RenderingSurface.COLOR.BLUE;
+                            this.ctx.fillStyle = UI.RenderingSurface.COLOR.BLUE;
                             this.ctx.fillRect(i * step, j * step, step, step);
                         } else if (grid.grid[i + (j * grid.size)] === Grid.CELLSTATE.PLAYER1) {
-                            this.ctx.fillStyle = GameInterface.RenderingSurface.COLOR.BLACK;
+                            this.ctx.fillStyle = UI.RenderingSurface.COLOR.BLACK;
                             this.ctx.fillRect(i * step, j * step, step, step);
                         } else if (grid.grid[i + (j * grid.size)] === Grid.CELLSTATE.PLAYER2) {
-                            this.ctx.fillStyle = GameInterface.RenderingSurface.COLOR.YELLOW;
+                            this.ctx.fillStyle = UI.RenderingSurface.COLOR.YELLOW;
                             this.ctx.fillRect(i * step, j * step, step, step);
                         }
-                        this.ctx.strokeStyle = "rgb(0, 0, 255)";
+                        this.ctx.strokeStyle = UI.RenderingSurface.COLOR.BLUE;
                         this.ctx.strokeRect(i * step, j * step, step, step);
                     }
                 }
@@ -209,106 +257,133 @@ document.dispatchEvent(ev);
             update: function() {
                 this.draw();
             }
+        }
+    };
+
+    var ui = UI.init();
+    //    ui.showPlayer(UI.PLAYER.PLAYER1);
+    //    ui.hidePlayer(UI.PLAYER.PLAYER2);
+
+
+
+
+
+    var GameInterface = {
+        /* static attributes */
+        PLAYER: {
+            PLAYER1: 0,
+            PLAYER2: 1,
         },
+
+        /* attributes */
+
+        currentPlayer: null,
+        gamePhase: null,
+
+        /* methods */
 
         init: function() {
-            this.playersDOM = [
-                Object.create(GameInterface.DOMPlayer).init('player1'),
-                Object.create(GameInterface.DOMPlayer).init('player2')
-            ];
-            this.dataPlayers = [
-                Object.create(GameInterface.DataPlayer).init(),
-                Object.create(GameInterface.DataPlayer).init()
-            ];
-            this.currentPlayer = this.CurrentPlayer.set(this.dataPlayers[0], this.playersDOM[0]);
-            this.waitingPlayer = this.CurrentPlayer.set(this.dataPlayers[1], this.playersDOM[1]);
-            this.initEvents();
-            this.surface = Object.create(GameInterface.RenderingSurface).init();
-            //            return (this);
+            var self = Object.create(this);
+
+            self.currentPlayer = GameInterface.PLAYER.PLAYER1;
+            // initialize start game event
+            self.initNewGameEvent();
+            // initialize controls
+            self.initEvents();
+            // update ui
+            ui.showPlayer(UI.PLAYER.PLAYER1);
+            ui.hidePlayer(UI.PLAYER.PLAYER2);
+            return (self);
         },
 
         /*
-        ** initDirectionEvent
-        ** @param playerDOM : Object (player DOM data)
-        ** @param dataPlayer : Object (player data representation)
-        ** @param moveReadyButton : Object (ready button)
-        ** @param id : int (player id)
+        ** initNewGameEvent
+        ** Event that triggers a new game
         */
-        initDirectionEvent: function(playerDOM, dataPlayer, moveReadyButton, id) {
-            var self = this;
-            var directionButtons = playerDOM.direction[0].getElementsByTagName('button');
-
-            for (var i = 0; i < directionButtons.length; i++) {
-                directionButtons[i].addEventListener('click', function(evt) {
-                    if (evt.target.className.match(/up/i)) {
-                        dataPlayer.moveDirection.set(0, -1);
-                    } else if (evt.target.className.match(/right/i)) {
-                        dataPlayer.moveDirection.set(1, 0);
-                    } else if (evt.target.className.match(/down/i)) {
-                        dataPlayer.moveDirection.set(0, 1);
-                    } else if (evt.target.className.match(/left/i)) {
-                        dataPlayer.moveDirection.set(-1, 0);
-                    }
-                    self.updateReadyButtonStatus(dataPlayer, moveReadyButton);
-                });
-            }
-        },
-
-        /*
-        ** initStepEvent
-        ** @param playerDOM : Object (player DOM data)
-        ** @param dataPlayer : Object (player data representation)
-        ** @param moveReadyButton : Object (ready button)
-        ** @param id : int (player id)
-        */
-        initStepEvent: function(playerDOM, dataPlayer, moveReadyButton, id) {
-            var self = this;
-            var stepButtons = playerDOM.step[0].getElementsByTagName('button');
-
-            for (var i = 0; i < stepButtons.length; i++) {
-                stepButtons[i].addEventListener('click', function(evt) {
-                    if (evt.target.className.match(/step1/i)) {
-                        dataPlayer.moveStep = 1;
-                    } else if (evt.target.className.match(/step2/i)) {
-                        dataPlayer.moveStep = 2;
-                    } else if (evt.target.className.match(/step3/i)) {
-                        dataPlayer.moveStep = 3;
-                    }
-                    self.updateReadyButtonStatus(dataPlayer, moveReadyButton);
-                });
-            }
-        },
-
-        /*
-        ** initMoveReadyEvent
-        ** @param playerDOM : Object (player DOM data)
-        ** @param dataPlayer : Object (player data representation)
-        ** @param moveReadyButton : Object (ready button)
-        ** @param id : int (player id)
-        */
-        initMoveReadyEvent: function(moveReadyButton, id) {
+        initNewGameEvent: function() {
             var self = this;
 
-            moveReadyButton.addEventListener('click', function() {
-                var currentPlayerData = self.dataPlayers[id];
-                //                var currentPlayerDOM = self.playersDOM[id];
-                //                var waitingPlayerDOM = (id === 0) ? self.playersDOM[1] : self.playersDOM[0];
-                var move = Game.Position.clone(currentPlayerData.moveDirection);
-
-                currentPlayerData.moveDirection.x *= currentPlayerData.moveStep;
-                currentPlayerData.moveDirection.y *= currentPlayerData.moveStep;
-                if (currentPlayerData.moveDirection.x != currentPlayerData.moveDirection.y) { // a direction and step has been set, move is ok 
-                    currentPlayerData.isReady = true;
-                    self.triggerMoveAction(currentPlayerData);
+            document.addEventListener('keypress', function(evt) {
+                if (evt.which == 13) { // Enter key
+                    app.newGame("", "");
+                    self.gamePhase = app.getGamePhase();
+                    // update the ui
+                    ui.update();
                 }
             });
         },
 
-        triggerMoveAction: function(player) {
-            app.playerMove(player.id, player.moveDirection.x, player.moveDirection.y);
-            player.reset();
-            this.playersDOM[player.id].moveActionReady[0].textContent = "Ready";
-            this.update();
+        /*
+        ** initActionReadyEvent
+        ** @param id : int (player id)
+        */
+        initActionReadyEvent: function() {
+            var self = this;
+            var inputs;
+            var direction = null;
+            var move;
+            var step = 0;
+
+            document.getElementsByClassName('playerActionReady')[0].addEventListener('click', function() {
+                inputs = document.getElementsByTagName('input');
+
+                if (app.gamePhase === Game.GAMEPHASE.MOVE) {
+                    for (var i = 0; i < inputs.length; i++) {
+                        /* get the direction */
+                        if (inputs[i].name == "playerDirection" && inputs[i].checked) {
+                            var split = inputs[i].value.split(',');
+
+                            direction = Game.Position.new(parseInt(split[0], 10), parseInt(split[1], 10));
+                            console.log(direction);
+                        }
+                        /* get the steps */
+                        if (inputs[i].name == "playerStep" && inputs[i].checked) {
+                            step = parseInt(inputs[i].value, 10);
+                            console.log(step);
+                        }
+                    }
+                    if ((direction != null) && (step != 0)) {
+                        move = Game.Position.new(direction.x * step, direction.y * step);
+                        app.playerMove(self.currentPlayer, move.x, move.y);
+                        self.currentPlayer = (self.currentPlayer === GameInterface.PLAYER.PLAYER1) ? 
+                            GameInterface.PLAYER.PLAYER2 : GameInterface.PLAYER.PLAYER1;
+                        // Change player turn
+                        ui.togglePlayer();
+                        // Update the ui
+                        ui.update();
+                    }
+                } else if (app.getGamePhase() === Game.GAMEPHASE.BATTLE) {
+                    var actionPlayer1 = Player.STANCE.ATTACK;
+                    var actionPlayer2 = Player.STANCE.ATTACK;
+
+                    app.playerSetStance(GameInterface.PLAYER.PLAYER1, Player.STANCE.ATTACK);
+                    app.playerSetStance(GameInterface.PLAYER.PLAYER2, Player.STANCE.ATTACK);
+                    for (var i = 0; i < inputs.length; i++) {
+                        /* get player 1 action */
+                        if (inputs[i].name == "actionPlayer1" && inputs[i].checked) {
+                            if (inputs[i].value == Player.STANCE.DEFENSE) {
+                                app.playerSetStance(GameInterface.PLAYER.PLAYER1, Player.STANCE.DEFENSE);
+                                actionPlayer1 = Player.STANCE.DEFENSE;
+                            }
+                        }
+                        /* get player 2 action */
+                        if (inputs[i].name == "actionPlayer2" && inputs[i].checked) {
+                            if (inputs[i].value == Player.STANCE.DEFENSE) {
+                                app.playerSetStance(GameInterface.PLAYER.PLAYER1, Player.STANCE.DEFENSE);
+                                actionPlayer1 = Player.STANCE.DEFENSE;
+                            }
+                        }
+                    }
+                    if (actionPlayer1 === Player.STANCE.ATTACK) {
+                        app.playerAttack(GameInterface.PLAYER.PLAYER1);
+                    }
+                    if (actionPlayer2 === Player.STANCE.ATTACK) {
+                        app.playerAttack(GameInterface.PLAYER.PLAYER2);
+                    }
+                    // Update the ui
+                    ui.update();
+                }
+            });
         },
 
         /*
@@ -338,38 +413,10 @@ document.dispatchEvent(ev);
         /*
         ** initEvents
         ** Event control initialization for both players
+        ** @param id : int
         */
-        initEvents: function() {
-            var self = this;
-
-            document.addEventListener('keypress', function(evt) {
-                if (evt.which == 13) { // Enter key
-                    app.newGame("", "");
-                    self.gamePhase = app.getGamePhase();
-                    self.update();
-                }
-            });
-
-
-            for (var id = 0; id < this.playersDOM.length; id++) {
-                // IIFE encapsulation
-                (function (id) {
-                    var playerDOM = self.playersDOM[id];
-                    var dataPlayer = self.dataPlayers[id];
-                    var directionButtons = playerDOM.direction[0].getElementsByTagName('button');
-                    var stepButtons = playerDOM.step[0].getElementsByTagName('button');
-                    var moveReadyButton = playerDOM.moveActionReady[0];
-                    var attackButton = playerDOM.attacks[0];
-                    var defendButton = playerDOM.defends[0];
-
-                    dataPlayer.setId(id);
-                    self.initDirectionEvent(playerDOM, dataPlayer, moveReadyButton, id);
-                    self.initStepEvent(playerDOM, dataPlayer, moveReadyButton, id);
-                    self.initMoveReadyEvent(moveReadyButton, id);
-                    self.initAttackDefenseEvent(dataPlayer, attackButton, defendButton)
-                    self.updateReadyButtonStatus(dataPlayer, moveReadyButton);
-                })(id);
-            }
+        initEvents: function(id) {
+            this.initActionReadyEvent(id);
         },
 
         /*
@@ -401,50 +448,14 @@ document.dispatchEvent(ev);
             }
         },
 
-        switchPlayer: function() {
-            var player = this.currentPlayer;
-
-            this.currentPlayer = this.waitingPlayer;
-            this.waitingPlayer = player;
-        },
-
-        updateGrid: function() {
-            this.surface.update();
-        },
-
-        updateReadyButtonStatus: function(dataPlayer, moveReadyButton) {
-            if ((dataPlayer.moveDirection.x !== dataPlayer.moveDirection.y)
-                && (dataPlayer.moveStep !== 0)) {
-                moveReadyButton.removeAttribute('disabled');
-                dataPlayer.isReady = true;
-                return ;
-            }
-            moveReadyButton.setAttribute('disabled', "disabled");
-        },
-
-        updateStatuses: function() {
-            var self = this;
-            var player;
-
-            for (var i = 0; i < this.playersDOM.length; i++) {
-                (function(i) {
-                    player = app.getPlayerData(i);
-                    self.playersDOM[i].name.textContent = player.name;
-                    self.playersDOM[i].hp.textContent = player.hp + " HP";
-                    self.playersDOM[i].weaponName.textContent = player.weaponName;
-                    self.playersDOM[i].weaponDamage.textContent = player.weaponDamage + " DMG";
-                    self.playersDOM[i].weaponImage.src = ("../css/assets/images/" + player.weaponName.toLowerCase() + ".png").replace(/ /, "_");
-                })(i);
-            }
-        },
-
         update: function() {
             var gamePhase = this.gamePhase;
 
             this.switchGamePhase();
             this.switchPlayer();
             // Remove current player control display
-            this.currentPlayer.DOM.self.style.display = "none";
+            this.currentPlayer.DOM.self.className += " disabled";
+            //            this.currentPlayer.DOM.self.style.display = "none";
             // Activate opponent player control display
             this.waitingPlayer.DOM.self.style.display = "";
             this.updateStatuses();
@@ -452,6 +463,45 @@ document.dispatchEvent(ev);
             console.log(app.getGrid().grid);
         }
     };
-
-    Object.create(GameInterface).init();
+    var gameInterface = GameInterface.init();
 })(app);
+
+
+/*
+
+Game Event Logic
+  Move control sequence :
+    - Choose a direction
+    - Choose a number of step
+    - Validate
+    - Give the hand to next player
+
+*/
+
+
+/*
+UI
+  Two main different game controls
+    - move control
+    - battle control
+  Needs :
+    - game grid
+    - currently playing player
+    - game state (move / battle)
+
+UI methods
+
+update:
+  clears and redraw elements
+showCurrentPlayerControl:
+  shows controls for the current player
+
+*/
+
+
+
+/*
+
+** Bug with left and right oob player moves **
+
+*/
