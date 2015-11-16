@@ -369,8 +369,8 @@ document.dispatchEvent(ev);
                         /* get player 2 action */
                         if (inputs[i].name == "actionPlayer2" && inputs[i].checked) {
                             if (inputs[i].value == Player.STANCE.DEFENSE) {
-                                app.playerSetStance(GameInterface.PLAYER.PLAYER1, Player.STANCE.DEFENSE);
-                                actionPlayer1 = Player.STANCE.DEFENSE;
+                                app.playerSetStance(GameInterface.PLAYER.PLAYER2, Player.STANCE.DEFENSE);
+                                actionPlayer2 = Player.STANCE.DEFENSE;
                             }
                         }
                     }

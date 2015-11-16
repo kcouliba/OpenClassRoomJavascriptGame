@@ -101,7 +101,7 @@ var Player = {
             console.log(this.name + " attacks " + player.name 
                         + " with " + this.weapon.name + " dealing " + this.weapon.damage + ".");
         }
-        if (!player.isAlive()) {
+        if (!player.isAlive() || !this.isAlive()) {
             return (false);
         }
         if (this.weapon != null) {
