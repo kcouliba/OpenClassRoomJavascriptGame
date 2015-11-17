@@ -47,6 +47,8 @@ document.dispatchEvent(ev);
         displayMode: null,
         players: [],
 
+        /* methods */
+
         init: function() {
             var self = Object.create(this);
 
@@ -59,7 +61,9 @@ document.dispatchEvent(ev);
             return (self);
         },
 
-        /* methods */
+        announceWinner: function(id) {
+            alert(app.getWinnerPhrase(id));
+        },
 
         /*
         ** showPlayer
@@ -98,6 +102,13 @@ document.dispatchEvent(ev);
                 this.displayMode = UI.DISPLAY.BATTLE;
                 this.updateBattleDisplay();
             }
+            //            if (!(app.isPlayerAlive(UI.PLAYER.PLAYER1) && app.isPlayerAlive(GameInterface.PLAYER.PLAYER1))) {
+            //                var winner =  (app.isPlayerAlive(UI.PLAYER.PLAYER1)) ? UI.PLAYER.PLAYER1 : UI.PLAYER.PLAYER2;
+            //                // Show win message
+            //                alert(app.getWinnerPhrase(UI.PLAYER.PLAYER2));
+            //                // Deactivate every control
+            //                // Ask for new game
+            //            }
             this.renderingSurface.update();
             this.updatePlayersStatus();
         },
@@ -376,9 +387,37 @@ document.dispatchEvent(ev);
                     }
                     if (actionPlayer1 === Player.STANCE.ATTACK) {
                         app.playerAttack(GameInterface.PLAYER.PLAYER1);
+                        // update the ui
+                        ui.update();
+                        if (!app.isPlayerAlive(GameInterface.PLAYER.PLAYER2)) {
+                            // announce player 1 is victorious
+                            ui.announceWinner(GameInterface.PLAYER.PLAYER1);
+                            // stop current game and ask for new game
+                            if (prompt("Start a new game ? (Y / N)") === "Y") {
+                                app.newGame("", "");
+                                self.gamePhase = app.getGamePhase();
+                            }
+                            // Update the ui
+                            ui.update();
+                            return ;
+                        }
                     }
                     if (actionPlayer2 === Player.STANCE.ATTACK) {
                         app.playerAttack(GameInterface.PLAYER.PLAYER2);
+                        // update the ui
+                        ui.update();
+                        if (!app.isPlayerAlive(GameInterface.PLAYER.PLAYER1)) {
+                            // announce player 2 is victorious
+                            ui.announceWinner(GameInterface.PLAYER.PLAYER2);
+                            // stop current game and ask for new game
+                            if (prompt("Start a new game ? (Y / N)") === "Y") {
+                                app.newGame("", "");
+                                self.gamePhase = app.getGamePhase();
+                            }
+                            // Update the ui
+                            ui.update();
+                            return ;
+                        }
                     }
                     // Update the ui
                     ui.update();
