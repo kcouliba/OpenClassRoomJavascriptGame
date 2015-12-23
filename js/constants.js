@@ -1,3 +1,6 @@
+/*
+** For debugging
+*/
 const DEBUG = true;
 
 /*
@@ -20,3 +23,40 @@ const MAX_WEAPON_COUNT
 const DEFAULT_WEAPON_NAME = "Gloves";
 const DEFAULT_WEAPON_IMAGE = "gloves.png";
 const DEFAULT_WEAPON_DAMAGE = 10;
+
+/*
+** For Player constant id
+*/
+const PLAYER = {
+    PLAYER1: 0,
+    PLAYER2: 1,
+};
+
+/*
+** Grid cell state
+*/
+const CELLSTATE = {
+    PLAYER1: PLAYER.PLAYER1,
+    PLAYER2: PLAYER.PLAYER2,
+    FREE: 2,
+    OBSTACLE: 3,
+    WEAPON:4
+};
+
+
+/*
+** Game phase representation
+*/
+const GAMEPHASE = {
+    MOVE: 0,
+    BATTLE: 1
+};
+
+/* Mainly for debug */
+const COLOR = {
+    RED: "rgb(255, 0, 0)",
+    GREEN: "rgb(0, 255, 0)",
+    BLUE: "rgb(0, 0, 255)",
+    YELLOW: "rgb(255, 255, 0)",
+    BLACK: "rgb(0, 0, 0)"
+};

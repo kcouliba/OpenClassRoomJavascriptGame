@@ -4,7 +4,7 @@
 ** weapon pick up will be done in function movePlayer()
 */
 
-var app = (function() {
+const app = (function() {
     /* Game initialization */
 
     // WeaponFactory
@@ -35,21 +35,6 @@ var app = (function() {
                 weaponPool.push(this.weapons[rand]);
             }
             return (weaponPool);
-        }
-    };
-
-    var GamePlayer = {
-        id: -1,
-        name: "",
-        hp: "",
-        weaponName: "",
-        weaponDamage: "",
-
-        init: function(name, hp, wName, wDamage) {
-            this.name = name;
-            this.hp = hp;
-            this.weaponName = wName;
-            this.weaponDamage = wDamage;
         }
     };
 
@@ -109,7 +94,7 @@ var app = (function() {
             if (!game.running()) {
                 return (false);
             }
-            if (!game.gamePhase === Game.GAMEPHASE.MOVE) {
+            if (!game.gamePhase === GAMEPHASE.MOVE) {
                 return (false);
             }
             if ((playerId < 0) || (playerId > 1)) {
@@ -138,7 +123,7 @@ var app = (function() {
             if (!game.running()) {
                 return (false);
             }
-            if (!game.gamePhase === Game.GAMEPHASE.BATTLE) {
+            if (!game.gamePhase === GAMEPHASE.BATTLE) {
                 return (false);
             }
             if ((playerId < 0) || (playerId > 1)) {
@@ -163,7 +148,7 @@ var app = (function() {
             if (!game.running()) {
                 return (false);
             }
-            if (!game.gamePhase === Game.GAMEPHASE.BATTLE) {
+            if (!game.gamePhase === GAMEPHASE.BATTLE) {
                 return (false);
             }
             if ((playerId < 0) || (playerId > 1)) {
@@ -175,10 +160,10 @@ var app = (function() {
         /*
         ** getGamePhase
         ** Gets the game current phase
-        ** @return Game.GAMEPHASE
+        ** @return GAMEPHASE
         */
         getGamePhase: function () {
-            this.gamePhase = (game.playerCollision() == true) ? Game.GAMEPHASE.BATTLE : Game.GAMEPHASE.MOVE;
+            this.gamePhase = (game.playerCollision() == true) ? GAMEPHASE.BATTLE : GAMEPHASE.MOVE;
             return (game.gamePhase);
         },
 
