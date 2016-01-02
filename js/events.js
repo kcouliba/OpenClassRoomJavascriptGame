@@ -220,7 +220,7 @@ document.dispatchEvent(ev);
         KEYBOARD_INPUT.KEY_DOWN,
         KEYBOARD_INPUT.KEY_RETURN
       ];
-      document.addEventListener("keydown", (event) => {
+      const controls = (event) => {
         if (validInputs.indexOf(event.which) === -1) {
           return true;
         }
@@ -256,7 +256,8 @@ document.dispatchEvent(ev);
           default:
             break;
         }
-      });
+      };
+      document.addEventListener("keydown", controls);
     },
 
     /*
