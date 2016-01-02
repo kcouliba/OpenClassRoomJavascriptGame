@@ -5,12 +5,12 @@ var ev = new CustomEvent('customEvt', { 'detail': { dumb: "dumb" } });
 var body = document.getElementsByTagName('body')[0];
 
 body.addEventListener('customEvt', function(e) {
-    console.log(e);
-    console.log(e.detail.dumb);
-    alert("custom event triggered");
+console.log(e);
+console.log(e.detail.dumb);
+alert("custom event triggered");
 });
 document.getElementsByTagName('div')[0].addEventListener('click', function() {
-    body.dispatchEvent(ev);
+body.dispatchEvent(ev);
 });
 
 document.dispatchEvent(ev);
@@ -31,263 +31,312 @@ document.dispatchEvent(ev);
 
 // IIFE encapsulation
 (function(app) {
-    var ui = UI.init();
-    //    ui.showPlayer(PLAYER.PLAYER1);
-    //    ui.hidePlayer(PLAYER.PLAYER2);
-    
-    var GameInterface = {
-        /* attributes */
+  "use strict";
 
-        currentPlayer: null,
-        gamePhase: null,
+  var ui = UI.init();
 
-        /* methods */
+  var GameInterface = {
+    /* attributes */
 
-        init: function() {
-            var self = Object.create(this);
+    currentPlayer: null,
+    gamePhase: null,
 
-            self.currentPlayer = PLAYER.PLAYER1;
-            // initialize start game event
-            self.initNewGameEvent();
-            // initialize controls
-            self.initEvents();
-            // update ui
-            ui.showPlayer(PLAYER.PLAYER1);
-            ui.hidePlayer(PLAYER.PLAYER2);
-            return (self);
-        },
+    /* methods */
 
-        /*
-        ** initNewGameEvent
-        ** Event that triggers a new game
-        */
-        initNewGameEvent: function() {
-            var self = this;
+    init: function() {
+      var self = Object.create(this);
 
-            const btn = document.querySelector(".btn-new-game");
-            
-            btn.addEventListener("click", () => {
+      self.currentPlayer = PLAYER.PLAYER1;
+      // initialize start game event
+      self.initNewGameEvent();
+      // initialize controls
+      self.initEvents();
+      // update ui
+      ui.showPlayer(PLAYER.PLAYER1);
+      ui.hidePlayer(PLAYER.PLAYER2);
+      return (self);
+    },
+
+    /*
+    ** initNewGameEvent
+    ** Event that triggers a new game
+    */
+    initNewGameEvent: function() {
+      var self = this;
+
+      const btn = document.querySelector(".btn-new-game");
+
+      btn.addEventListener("click", () => {
+        app.newGame("", "");
+        self.gamePhase = app.getGamePhase();
+        // update the ui
+        ui.update();
+        btn.setAttribute("disabled", "disabled");
+        console.log(btn);
+      });
+    },
+
+    /*
+    ** initActionReadyEvent
+    ** @param id : int (player id)
+    */
+    initActionReadyEvent: function() {
+      var self = this;
+      var inputs;
+      var direction = null;
+      var move;
+      var step = 0;
+
+      document.getElementsByClassName('playerActionReady')[0].addEventListener('click', function() {
+        inputs = document.getElementsByTagName('input');
+
+        if (app.gamePhase === GAMEPHASE.MOVE) {
+          for (var i = 0; i < inputs.length; i++) {
+            /* get the direction */
+            if (inputs[i].name == "playerDirection" && inputs[i].checked) {
+              var split = inputs[i].value.split(',');
+
+              direction = Position.new(parseInt(split[0], 10), parseInt(split[1], 10));
+              console.log(direction);
+            }
+            /* get the steps */
+            if (inputs[i].name == "playerStep" && inputs[i].checked) {
+              step = parseInt(inputs[i].value, 10);
+              console.log(step);
+            }
+          }
+          if ((direction != null) && (step != 0)) {
+            move = Position.new(direction.x * step, direction.y * step);
+            app.playerMove(self.currentPlayer, move.x, move.y);
+            self.currentPlayer = (self.currentPlayer === PLAYER.PLAYER1) ?
+            PLAYER.PLAYER2 : PLAYER.PLAYER1;
+            // Change player turn
+            ui.togglePlayer();
+            // Update the ui
+            ui.update();
+          }
+        } else if (app.getGamePhase() === GAMEPHASE.BATTLE) {
+          var actionPlayer1 = Player.STANCE.ATTACK;
+          var actionPlayer2 = Player.STANCE.ATTACK;
+
+          app.playerSetStance(PLAYER.PLAYER1, Player.STANCE.ATTACK);
+          app.playerSetStance(PLAYER.PLAYER2, Player.STANCE.ATTACK);
+          for (var i = 0; i < inputs.length; i++) {
+            /* get player 1 action */
+            if (inputs[i].name == "actionPlayer1" && inputs[i].checked) {
+              if (inputs[i].value == Player.STANCE.DEFENSE) {
+                app.playerSetStance(PLAYER.PLAYER1, Player.STANCE.DEFENSE);
+                actionPlayer1 = Player.STANCE.DEFENSE;
+              }
+            }
+            /* get player 2 action */
+            if (inputs[i].name == "actionPlayer2" && inputs[i].checked) {
+              if (inputs[i].value == Player.STANCE.DEFENSE) {
+                app.playerSetStance(PLAYER.PLAYER2, Player.STANCE.DEFENSE);
+                actionPlayer2 = Player.STANCE.DEFENSE;
+              }
+            }
+          }
+          if (actionPlayer1 === Player.STANCE.ATTACK) {
+            app.playerAttack(PLAYER.PLAYER1);
+            // update the ui
+            ui.update();
+            if (!app.isPlayerAlive(PLAYER.PLAYER2)) {
+              // announce player 1 is victorious
+              ui.announceWinner(PLAYER.PLAYER1);
+              // stop current game and ask for new game
+              if (prompt("Start a new game ? (Y / N)") === "Y") {
                 app.newGame("", "");
                 self.gamePhase = app.getGamePhase();
-                // update the ui
-                ui.update();
-                btn.setAttribute("disabled", "disabled");
-                console.log(btn);
-            });
-        },
-
-        /*
-        ** initActionReadyEvent
-        ** @param id : int (player id)
-        */
-        initActionReadyEvent: function() {
-            var self = this;
-            var inputs;
-            var direction = null;
-            var move;
-            var step = 0;
-
-            document.getElementsByClassName('playerActionReady')[0].addEventListener('click', function() {
-                inputs = document.getElementsByTagName('input');
-
-                if (app.gamePhase === GAMEPHASE.MOVE) {
-                    for (var i = 0; i < inputs.length; i++) {
-                        /* get the direction */
-                        if (inputs[i].name == "playerDirection" && inputs[i].checked) {
-                            var split = inputs[i].value.split(',');
-
-                            direction = Position.new(parseInt(split[0], 10), parseInt(split[1], 10));
-                            console.log(direction);
-                        }
-                        /* get the steps */
-                        if (inputs[i].name == "playerStep" && inputs[i].checked) {
-                            step = parseInt(inputs[i].value, 10);
-                            console.log(step);
-                        }
-                    }
-                    if ((direction != null) && (step != 0)) {
-                        move = Position.new(direction.x * step, direction.y * step);
-                        app.playerMove(self.currentPlayer, move.x, move.y);
-                        self.currentPlayer = (self.currentPlayer === PLAYER.PLAYER1) ? 
-                            PLAYER.PLAYER2 : PLAYER.PLAYER1;
-                        // Change player turn
-                        ui.togglePlayer();
-                        // Update the ui
-                        ui.update();
-                    }
-                } else if (app.getGamePhase() === GAMEPHASE.BATTLE) {
-                    var actionPlayer1 = Player.STANCE.ATTACK;
-                    var actionPlayer2 = Player.STANCE.ATTACK;
-
-                    app.playerSetStance(PLAYER.PLAYER1, Player.STANCE.ATTACK);
-                    app.playerSetStance(PLAYER.PLAYER2, Player.STANCE.ATTACK);
-                    for (var i = 0; i < inputs.length; i++) {
-                        /* get player 1 action */
-                        if (inputs[i].name == "actionPlayer1" && inputs[i].checked) {
-                            if (inputs[i].value == Player.STANCE.DEFENSE) {
-                                app.playerSetStance(PLAYER.PLAYER1, Player.STANCE.DEFENSE);
-                                actionPlayer1 = Player.STANCE.DEFENSE;
-                            }
-                        }
-                        /* get player 2 action */
-                        if (inputs[i].name == "actionPlayer2" && inputs[i].checked) {
-                            if (inputs[i].value == Player.STANCE.DEFENSE) {
-                                app.playerSetStance(PLAYER.PLAYER2, Player.STANCE.DEFENSE);
-                                actionPlayer2 = Player.STANCE.DEFENSE;
-                            }
-                        }
-                    }
-                    if (actionPlayer1 === Player.STANCE.ATTACK) {
-                        app.playerAttack(PLAYER.PLAYER1);
-                        // update the ui
-                        ui.update();
-                        if (!app.isPlayerAlive(PLAYER.PLAYER2)) {
-                            // announce player 1 is victorious
-                            ui.announceWinner(PLAYER.PLAYER1);
-                            // stop current game and ask for new game
-                            if (prompt("Start a new game ? (Y / N)") === "Y") {
-                                app.newGame("", "");
-                                self.gamePhase = app.getGamePhase();
-                            }
-                            // Update the ui
-                            ui.update();
-                            return ;
-                        }
-                    }
-                    if (actionPlayer2 === Player.STANCE.ATTACK) {
-                        app.playerAttack(PLAYER.PLAYER2);
-                        // update the ui
-                        ui.update();
-                        if (!app.isPlayerAlive(PLAYER.PLAYER1)) {
-                            // announce player 2 is victorious
-                            ui.announceWinner(PLAYER.PLAYER2);
-                            // stop current game and ask for new game
-                            if (prompt("Start a new game ? (Y / N)") === "Y") {
-                                app.newGame("", "");
-                                self.gamePhase = app.getGamePhase();
-                            }
-                            // Update the ui
-                            ui.update();
-                            return ;
-                        }
-                    }
-                    // Update the ui
-                    ui.update();
-                }
-            });
-        },
-
-        /*
-        ** initAttackDefenseEvent
-        ** @param dataPlayer : Object (player data representation)
-        ** @param attackButton : Object (attack button)
-        ** @param defendButton : Object (defend button)
-        */
-        initAttackDefenseEvent: function(dataPlayer, attackButton, defendButton) {
-            var self = this;
-
-            attackButton.addEventListener('click', function() {
-                dataPlayer.setStance(Player.STANCE.ATTACK);
-                this.setAttribute('disabled', "disabled");
-                //                        defendButton.removeAttribute('disabled');
-                defendButton.setAttribute('disabled', "disabled");
-            });
-            // Defense event
-            defendButton.addEventListener('click', function() {
-                dataPlayer.setStance(Player.STANCE.DEFENSE);
-                this.setAttribute('disabled', "disabled");
-                //                        attackButton.setAttribute('disabled', "disabled");
-                attackButton.removeAttribute('disabled');
-            });
-        },
-
-        /*
-        ** initEvents
-        ** Event control initialization for both players
-        ** @param id : int
-        */
-        initEvents: function(id) {
-            this.initActionReadyEvent(id);
-        },
-
-        /*
-        ** switchGamePhase
-        ** Watches if the gamePhase Changed
-        */
-        switchGamePhase: function() {
-            if (app.getGamePhase() !== this.gamePhase) {
-                var moveButtonsDiv = [
-                    document.getElementById('player1').getElementsByClassName('playerActionMove')[0],
-                    document.getElementById('player2').getElementsByClassName('playerActionMove')[0]
-                ];
-                var battleButtonsDiv = [
-                    document.getElementById('player1').getElementsByClassName('playerActionBattle')[0],
-                    document.getElementById('player2').getElementsByClassName('playerActionBattle')[0]
-                ];
-                var moveControls = [
-                    document.getElementById('player1').getElementsByClassName('playerMove')[0],
-                    document.getElementById('player2').getElementsByClassName('playerMove')[0],
-                ];
-
-                for (var i = 0; i < moveControls.length; i++) {
-                    moveControls[i].className += " hidden";
-                }
-                for (var i = 0; i < battleButtonsDiv.length; i++) {
-                    battleButtonsDiv[i].className = moveButtonsDiv[i].className.replace(/hidden/, "");
-                }
-                this.gamePhase = app.getGamePhase();
+              }
+              // Update the ui
+              ui.update();
+              return ;
             }
-        },
-
-        update: function() {
-            var gamePhase = this.gamePhase;
-
-            this.switchGamePhase();
-            this.switchPlayer();
-            // Remove current player control display
-            this.currentPlayer.DOM.self.className += " disabled";
-            //            this.currentPlayer.DOM.self.style.display = "none";
-            // Activate opponent player control display
-            this.waitingPlayer.DOM.self.style.display = "";
-            this.updateStatuses();
-            this.updateGrid();
-            console.log(app.getGrid().grid);
+          }
+          if (actionPlayer2 === Player.STANCE.ATTACK) {
+            app.playerAttack(PLAYER.PLAYER2);
+            // update the ui
+            ui.update();
+            if (!app.isPlayerAlive(PLAYER.PLAYER1)) {
+              // announce player 2 is victorious
+              ui.announceWinner(PLAYER.PLAYER2);
+              // stop current game and ask for new game
+              if (prompt("Start a new game ? (Y / N)") === "Y") {
+                app.newGame("", "");
+                self.gamePhase = app.getGamePhase();
+              }
+              // Update the ui
+              ui.update();
+              return ;
+            }
+          }
+          // Update the ui
+          ui.update();
         }
-    };
-    
-    var gameInterface = GameInterface.init();
-    gameInterface.initNewGameEvent();
+      });
+    },
+
+    /*
+    ** initAttackDefenseEvent
+    ** @param dataPlayer : Object (player data representation)
+    ** @param attackButton : Object (attack button)
+    ** @param defendButton : Object (defend button)
+    */
+    initAttackDefenseEvent: function(dataPlayer, attackButton, defendButton) {
+      var self = this;
+
+      attackButton.addEventListener('click', function() {
+        dataPlayer.setStance(Player.STANCE.ATTACK);
+        this.setAttribute('disabled', "disabled");
+        //                        defendButton.removeAttribute('disabled');
+        defendButton.setAttribute('disabled', "disabled");
+      });
+      // Defense event
+      defendButton.addEventListener('click', function() {
+        dataPlayer.setStance(Player.STANCE.DEFENSE);
+        this.setAttribute('disabled', "disabled");
+        //                        attackButton.setAttribute('disabled', "disabled");
+        attackButton.removeAttribute('disabled');
+      });
+    },
+
+    /*
+    ** initEvents
+    ** Event control initialization for both players
+    ** @param id : int
+    */
+    initEvents: function(id) {
+      this.initActionReadyEvent(id);
+
+      const step = {
+        x: 0,
+        y: 0
+      };
+      const validInputs = [
+        KEYBOARD_INPUT.KEY_LEFT,
+        KEYBOARD_INPUT.KEY_UP,
+        KEYBOARD_INPUT.KEY_RIGHT,
+        KEYBOARD_INPUT.KEY_DOWN,
+        KEYBOARD_INPUT.KEY_RETURN
+      ];
+      document.addEventListener("keydown", (event) => {
+        if (validInputs.indexOf(event.which) === -1) {
+          return true;
+        }
+        event.stopPropagation();
+        event.preventDefault();
+        console.log(`key : ${event.which}`);
+        switch (event.which) {
+          case KEYBOARD_INPUT.KEY_LEFT:
+            step.x -= ((step.x - 1) >= -MAX_PLAYER_MOVE) ? 1 : 0;
+            step.y = 0;
+            console.log(`move left`);
+            break;
+          case KEYBOARD_INPUT.KEY_UP:
+            step.x = 0;
+            step.y -= ((step.y - 1) >= -MAX_PLAYER_MOVE) ? 1 : 0;
+            console.log(`move up`);
+            break;
+          case KEYBOARD_INPUT.KEY_RIGHT:
+            step.x += ((step.x + 1) <= MAX_PLAYER_MOVE) ? 1 : 0;
+            step.y = 0;
+            console.log(`move right`);
+            break;
+          case KEYBOARD_INPUT.KEY_DOWN:
+            step.x = 0;
+            step.y += ((step.y + 1) <= MAX_PLAYER_MOVE) ? 1 : 0;
+            console.log(`move down`);
+            break;
+          case 13:
+            console.log(`validate move : (${step.x}, ${step.y})`);
+            step.x = 0;
+            step.y = 0;
+            break;
+          default:
+            break;
+        }
+      });
+    },
+
+    /*
+    ** switchGamePhase
+    ** Watches if the gamePhase Changed
+    */
+    switchGamePhase: function() {
+      if (app.getGamePhase() !== this.gamePhase) {
+        var moveButtonsDiv = [
+          document.getElementById('player1').getElementsByClassName('playerActionMove')[0],
+          document.getElementById('player2').getElementsByClassName('playerActionMove')[0]
+        ];
+        var battleButtonsDiv = [
+          document.getElementById('player1').getElementsByClassName('playerActionBattle')[0],
+          document.getElementById('player2').getElementsByClassName('playerActionBattle')[0]
+        ];
+        var moveControls = [
+          document.getElementById('player1').getElementsByClassName('playerMove')[0],
+          document.getElementById('player2').getElementsByClassName('playerMove')[0],
+        ];
+
+        for (var i = 0; i < moveControls.length; i++) {
+          moveControls[i].className += " hidden";
+        }
+        for (var i = 0; i < battleButtonsDiv.length; i++) {
+          battleButtonsDiv[i].className = moveButtonsDiv[i].className.replace(/hidden/, "");
+        }
+        this.gamePhase = app.getGamePhase();
+      }
+    },
+
+    update: function() {
+      var gamePhase = this.gamePhase;
+
+      this.switchGamePhase();
+      this.switchPlayer();
+      // Remove current player control display
+      this.currentPlayer.DOM.self.className += " disabled";
+      //            this.currentPlayer.DOM.self.style.display = "none";
+      // Activate opponent player control display
+      this.waitingPlayer.DOM.self.style.display = "";
+      this.updateStatuses();
+      this.updateGrid();
+      console.log(app.getGrid().grid);
+    }
+  };
+
+  var gameInterface = GameInterface.init();
+  gameInterface.initNewGameEvent();
 })(app);
 
 
 /*
 
 Game Event Logic
-  Move control sequence :
-    - Choose a direction
-    - Choose a number of step
-    - Validate
-    - Give the hand to next player
+Move control sequence :
+- Choose a direction
+- Choose a number of step
+- Validate
+- Give the hand to next player
 
 */
 
 
 /*
 UI
-  Two main different game controls
-    - move control
-    - battle control
-  Needs :
-    - game grid
-    - currently playing player
-    - game state (move / battle)
+Two main different game controls
+- move control
+- battle control
+Needs :
+- game grid
+- currently playing player
+- game state (move / battle)
 
 UI methods
 
 update:
-  clears and redraw elements
+clears and redraw elements
 showCurrentPlayerControl:
-  shows controls for the current player
+shows controls for the current player
 
 */
 

@@ -43,7 +43,6 @@ const CELLSTATE = {
     WEAPON:4
 };
 
-
 /*
 ** Game phase representation
 */
@@ -51,6 +50,15 @@ const GAMEPHASE = {
     MOVE: 0,
     BATTLE: 1
 };
+
+// Keyboard input
+const KEYBOARD_INPUT = {
+  KEY_LEFT: 37,
+  KEY_UP: 38,
+  KEY_RIGHT: 39,
+  KEY_DOWN: 40,
+  KEY_RETURN: 13
+}
 
 /* Mainly for debug */
 const COLOR = {

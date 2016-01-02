@@ -45,8 +45,8 @@ const RenderingSurface = {
         var grid = app.getGrid();
         var step = this.width / grid.size;
 
-        this.canvas.setAttribute('width', this.width);
-        this.canvas.setAttribute('height', this.height);
+        this.canvas.setAttribute("width", this.width);
+        this.canvas.setAttribute("height", this.height);
         this.canvas.style.width = this.width + "px";
         this.canvas.style.height = this.height + "px";
         this.canvas.style.marginLeft = ((this.surface.clientWidth - this.width) / 2) + "px"; // Centering
@@ -73,6 +73,9 @@ const RenderingSurface = {
                 this.ctx.strokeRect(i * step, j * step, step, step);
             }
         }
+        this.ctx.strokeWidth = "2px";
+        this.ctx.strokeStyle = COLOR.RED;
+        this.ctx.strokeRect(0 * step, 0 * step, step, step);
     },
 
     /*
@@ -123,7 +126,7 @@ const PlayerUI = {
 
 const UI = {
     /* static attributes */
-    
+
     DISPLAY: {
         MOVE: 0,
         BATTLE: 1

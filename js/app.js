@@ -62,15 +62,15 @@ const app = (function() {
         ** @return Array
         */
         newGame: function(player1Name, player2Name) {
-            if (game.running()) { // If a game is running stops it
+            if (game.running()) { // If a game is running we stop it
                 game.stop();
             }
             var weapons = weaponFactory.get(MAX_WEAPON_COUNT);
             var players = [
                 Player.new(player1Data.id, player1Name || DEFAULT_PLAYER_NAME + "1")
-                .equipWeapon(weapons[0]),
+                  .equipWeapon(weapons[0]),
                 Player.new(player2Data.id, player2Name || DEFAULT_PLAYER_NAME + "2")
-                .equipWeapon(weapons[0])
+                  .equipWeapon(weapons[0])
             ];
 
             game.init(Grid.new(SIZE), weapons, players);
@@ -137,7 +137,7 @@ const app = (function() {
             updatePlayerData(player2);
             return (success);
         },
-        
+
         /*
         ** playerSetStance
         ** Make a player move its stance mode
