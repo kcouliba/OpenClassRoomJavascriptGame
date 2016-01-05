@@ -6,7 +6,7 @@
 
 var Game = {
     /* Game attributes */
-    
+
     run: false,
     grid: null,
     weapons: [],
@@ -14,7 +14,7 @@ var Game = {
     gamePhase: null,
 
     /* Game methods */
-    
+
     /*
     ** new
     ** Returns a new Game instance
@@ -126,7 +126,7 @@ var Game = {
                     this.players[0].setPosition(i, j);
                     placed = true;
                     break ;
-                }                
+                }
             }
             if (placed) {
                 if (DEBUG) {
@@ -145,7 +145,7 @@ var Game = {
                     this.players[1].setPosition(i, j);
                     placed = true;
                     break ;
-                }                
+                }
             }
             if (placed) {
                 if (DEBUG) {
@@ -222,6 +222,7 @@ var Game = {
                 }
             }
         }
+        player.setPosition(nextPos.x, currentPos.y);
         if (stepy < 0) { // moving up
             if (DEBUG) {
                 console.log("Player " + player.name + " is moving up");
