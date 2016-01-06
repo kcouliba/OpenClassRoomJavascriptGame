@@ -5,231 +5,310 @@
 */
 
 const app = (function() {
-    /* Game initialization */
+  /* Game initialization */
 
-    // WeaponFactory
-    var weaponFactory = {
-        weapons: [
-            Weapon.new(DEFAULT_WEAPON_NAME, DEFAULT_WEAPON_DAMAGE),
-            Weapon.new("Pillow", 3),
-            Weapon.new("Bare hand", 5),
-            Weapon.new("Fork", 8),
-            Weapon.new("Club", 12),
-            Weapon.new("Hoover", 14),
-            Weapon.new("Shotgun", 30)
-        ],
+  // WeaponFactory
+  var weaponFactory = {
+    weapons: [
+      Weapon.new(DEFAULT_WEAPON_NAME, DEFAULT_WEAPON_DAMAGE),
+      Weapon.new("Pillow", 3),
+      Weapon.new("Bare hand", 5),
+      Weapon.new("Fork", 8),
+      Weapon.new("Club", 12),
+      Weapon.new("Hoover", 14),
+      Weapon.new("Shotgun", 30)
+    ],
 
-        /*
-        ** get
-        ** Returns an array containing weapons
-        ** @param count : int
-        ** @return Array
-        */
-        get: function(count) {
-            var weaponPool = [];
+    /*
+    ** get
+    ** Returns an array containing weapons
+    ** @param count : int
+    ** @return Array
+    */
+    get: function(count) {
+      var weaponPool = [];
 
-            weaponPool.push(this.weapons[0]);
-            for (var i = count; i > 1; i--) {
-                var rand = Math.floor(Math.random() * 100 * (this.weapons.length - 1) / 100);
+      weaponPool.push(this.weapons[0]);
+      for (var i = count; i > 1; i--) {
+        var rand = Math.floor(Math.random() * 100 * (this.weapons.length - 1) / 100);
 
-                weaponPool.push(this.weapons[rand]);
-            }
-            return (weaponPool);
-        }
-    };
-
-    // Game mandatory variables
-    var game = Game.new();
-    var player1, player2;
-    var player1Data = Object.create(GamePlayer);
-    var player2Data = Object.create(GamePlayer);
-
-    player1Data.id = 0;
-    player2Data.id = 1;
-
-    function updatePlayerData(player) {
-        var playerData = (player.id === 0) ? player1Data : player2Data;
-
-        playerData.init(player.name, player.hp, player.weapon.name, player.weapon.damage);
+        weaponPool.push(this.weapons[rand]);
+      }
+      return (weaponPool);
     }
+  };
 
-    return ({
-        /*
-        ** newGame
-        ** Sets a new game and returns players in an array
-        ** @param player1Name : string
-        ** @param player2Name : string
-        ** @return Array
-        */
-        newGame: function(player1Name, player2Name) {
-            if (game.running()) { // If a game is running we stop it
-                game.stop();
-            }
-            var weapons = weaponFactory.get(MAX_WEAPON_COUNT);
-            var players = [
-                Player.new(player1Data.id, player1Name || DEFAULT_PLAYER_NAME + "1")
-                  .equipWeapon(weapons[0]),
-                Player.new(player2Data.id, player2Name || DEFAULT_PLAYER_NAME + "2")
-                  .equipWeapon(weapons[0])
-            ];
+  // Game mandatory variables
+  var game = Game.new();
+  var renderingSurface = RenderingSurface;
+  var player1, player2, activePlayer;
+  var player1Data = Object.create(GamePlayer);
+  var player2Data = Object.create(GamePlayer);
 
-            game.init(Grid.new(SIZE), weapons, players);
-            player1 = game.getPlayer(player1Data.id); // Get player1 data
-            player2 = game.getPlayer(player2Data.id); // Get player2 data
-            updatePlayerData(player1);
-            updatePlayerData(player2);
-            game.start();
-            return ([player1Data, player2Data]);
-        },
+  player1Data.id = 0;
+  player2Data.id = 1;
+  activePlayer = null;
+  idlePlayer = null;
 
-        /*
-        ** playerMove
-        ** Make a player move
-        ** @param playerId : int
-        ** @param stepX : int
-        ** @param stepY : int
-        ** @return bool
-        */
-        playerMove: function(playerId, stepX, stepY) {
-            if (!game.running()) {
-                return (false);
-            }
-            if (!game.gamePhase === GAMEPHASE.MOVE) {
-                return (false);
-            }
-            if ((playerId < 0) || (playerId > 1)) {
-                return (false);
-            }
-            if ((Math.abs(stepX) > MAX_PLAYER_MOVE)
-                || (Math.abs(stepY) > MAX_PLAYER_MOVE)) {
-                return (false);
-            }
-            var player = (playerId === 0) ? player1 : player2;
-            /*if (!game.isValidMove(player, stepX, stepY)) {
-                return (false);
-            }*/
-            game.movePlayer(player, stepX, stepY);
-            updatePlayerData(player);
-            return (true);
-        },
+  /* Functions */
 
-        /*
-        ** playerAttack
-        ** Make a player attack the other one
-        ** @param playerId : int
-        ** @return bool
-        */
-        playerAttack: function(playerId) {
-            if (!game.running()) {
-                return (false);
-            }
-            if (!game.gamePhase === GAMEPHASE.BATTLE) {
-                return (false);
-            }
-            if ((playerId < 0) || (playerId > 1)) {
-                return (false);
-            }
-            var attacker = (playerId === 0) ? player1 : player2;
-            var defender = (playerId === 0) ? player2 : player1;
-            var success = attacker.attack(defender);
+  /*
+  ** updatePlayerData
+  ** Updates player data
+  */
+  function updatePlayerData(player) {
+    var playerData = (player.id === 0) ? player1Data : player2Data;
 
-            updatePlayerData(player1);
-            updatePlayerData(player2);
-            return (success);
-        },
+    playerData.init(player.name, player.hp, player.weapon.name, player.weapon.damage);
+  }
 
-        /*
-        ** playerSetStance
-        ** Make a player move its stance mode
-        ** @param playerId : int
-        ** @param stance : int
-        */
-        playerSetStance: function(playerId, stance) {
-            if (!game.running()) {
-                return (false);
-            }
-            if (!game.gamePhase === GAMEPHASE.BATTLE) {
-                return (false);
-            }
-            if ((playerId < 0) || (playerId > 1)) {
-                return (false);
-            }
-            game.getPlayer(playerId).setStance(stance);
-        },
+  /*
+  ** switchPlayer
+  ** Switches player roles / turn
+  */
+  function switchPlayer() {
+    activePlayer = (activePlayer === player1) ? player2 : player1;
+    idlePlayer = (activePlayer === player1) ? player2 : player1;
+  }
 
-        /*
-        ** getGamePhase
-        ** Gets the game current phase
-        ** @return GAMEPHASE
-        */
-        getGamePhase: function () {
-            this.gamePhase = (game.playerCollision() == true) ? GAMEPHASE.BATTLE : GAMEPHASE.MOVE;
-            return (game.gamePhase);
-        },
+  /*
+  ** playerMove
+  ** Make a player move
+  ** @param playerId : int
+  ** @param stepX : int
+  ** @param stepY : int
+  ** @return bool
+  */
+  function playerMove(stepX, stepY) {
+    if (!game.running()) {
+      return (false);
+    }
+    if (!game.gamePhase === GAMEPHASE.MOVE) {
+      return (false);
+    }
+    if (activePlayer === null) {
+      return (false);
+    }
+    if ((Math.abs(stepX) > MAX_PLAYER_MOVE)
+    || (Math.abs(stepY) > MAX_PLAYER_MOVE)) {
+      return (false);
+    }
+    game.movePlayer(activePlayer, stepX, stepY);
+    updatePlayerData(activePlayer);
+    switchPlayer();
+    return (true);
+  }
 
-        /*
-        ** isPlayerAlive
-        ** Checks if a player is alive
-        ** @param playerId : int
-        ** @return bool
-        */
-        isPlayerAlive: function(playerId) {
-            if (!game.running()) {
-                return (false);
-            }
-            if ((playerId < 0) || (playerId > 1)) {
-                return (false);
-            }
-            return (((playerId === 0) ? player1 : player2).isAlive());
-        },
+  /*
+  ** playerAttack
+  ** Make a player attack the other one
+  ** @param playerId : int
+  ** @return bool
+  */
+  function playerAttack() {
+    if (!game.running()) {
+      return (false);
+    }
+    if (!game.gamePhase === GAMEPHASE.BATTLE) {
+      return (false);
+    }
+    if (activePlayer === null) {
+      return (false);
+    }
+    var success = activePlayer.attack(idlePlayer);
 
-        /*
-        ** getGrid
-        ** Fetches current grid state
-        ** @return Grid
-        */
-        getGrid: function() {
-            return (game.grid);
-        },
+    updatePlayerData(activePlayer);
+    updatePlayerData(idlePlayer);
+    switchPlayer();
+    return (success);
+  }
 
-        /*
-        ** Retrieves a player's data
-        ** @param playerId : int
-        ** @return PlayerData
-        */
-        getPlayerData: function(playerId) {
-            if ((playerId < 0) || (playerId > 1)) {
-                return (false);
-            }
-            return ((playerId === 0) ? player1Data : player2Data)
-        },
+  /*
+  ** playerSetStance
+  ** Make a player move its stance mode
+  ** @param playerId : int
+  ** @param stance : int
+  */
+  function playerSetStance(stance) {
+    if (!game.running()) {
+      return (false);
+    }
+    if (!game.gamePhase === GAMEPHASE.BATTLE) {
+      return (false);
+    }
+    if (activePlayer === null) {
+      return (false);
+    }
+    game.getPlayer(activePlayer).setStance(stance);
+    switchPlayer();
+  }
 
-        /*
-        ** getWinnerPhrase
-        ** Returns a winning phrase depending on winner's status
-        ** @param playerId : int
-        ** @return string or null
-        */
-        getWinnerPhrase: function(playerId) {
-            if (!game.running()) {
-                return (null);
-            }
-            if ((playerId < 0) || (playerId > 1)) {
-                return (null);
-            }
-            var player = (playerId === 0) ? player1Data : player2Data;
+  /*
+  ** hasWinner
+  ** Checks if a player has fainted
+  ** @return object
+  */
+  function hasWinner() {
+    if (!activePlayer.isAlive()) {
+      return {
+        winner: idlePlayer,
+        loser: activePlayer
+      }
+    }
+    if (!idlePlayer.isAlive()) {
+      return {
+        winner: activePlayer,
+        loser: idlePlayer
+      }
+    }
+    return null;
+  }
 
-            if (player.hp >= MAX_PLAYER_HP * .75 ) {
-                return ("awkward !!! ".toUpperCase() + player.name
-                        + " you totally mastered this fight !".toUpperCase()
-                       );
-            } else if (player.hp >= (MAX_PLAYER_HP * .5)) {
-                return ("Congratulations " + player.name + " the victory is yours !");
-            } else if (player.hp >= (MAX_PLAYER_HP * .25)) {
-                return ("Hey " + player.name + " that was a tough fight but you've proven you are the best.");
-            } else {
-                return (player.name + " wins.");
-            }
-        }
-    });
+  /* Inputs */
+
+  function keyInput() {
+    const step = {
+      x: 0,
+      y: 0
+    };
+    const validInputs = [
+      KEYBOARD_INPUT.KEY_LEFT,
+      KEYBOARD_INPUT.KEY_UP,
+      KEYBOARD_INPUT.KEY_RIGHT,
+      KEYBOARD_INPUT.KEY_DOWN,
+      KEYBOARD_INPUT.KEY_RETURN
+    ];
+    const controls = (event) => {
+      if (validInputs.indexOf(event.which) === -1) {
+        return true;
+      }
+      event.stopPropagation();
+      event.preventDefault();
+      console.log(`key : ${event.which}`);
+      switch (event.which) {
+        case KEYBOARD_INPUT.KEY_LEFT:
+          step.x -= ((step.x - 1) >= -MAX_PLAYER_MOVE) ? 1 : 0;
+          step.y = 0;
+          console.log(`move left`);
+          break;
+        case KEYBOARD_INPUT.KEY_UP:
+          step.x = 0;
+          step.y -= ((step.y - 1) >= -MAX_PLAYER_MOVE) ? 1 : 0;
+          console.log(`move up`);
+          break;
+        case KEYBOARD_INPUT.KEY_RIGHT:
+          step.x += ((step.x + 1) <= MAX_PLAYER_MOVE) ? 1 : 0;
+          step.y = 0;
+          console.log(`move right`);
+          break;
+        case KEYBOARD_INPUT.KEY_DOWN:
+          step.x = 0;
+          step.y += ((step.y + 1) <= MAX_PLAYER_MOVE) ? 1 : 0;
+          console.log(`move down`);
+          break;
+        case 13:
+          console.log(`validate move : (${step.x}, ${step.y})`);
+          playerMove(step.x, step.y);
+          renderingSurface.update();
+          step.x = 0;
+          step.y = 0;
+          break;
+        default:
+          break;
+      }
+    };
+    document.addEventListener("keydown", controls);
+  }
+
+  return ({
+    /*
+    ** newGame
+    ** Sets a new game and returns players in an array
+    ** @param player1Name : string
+    ** @param player2Name : string
+    ** @return Array
+    */
+    newGame: function(player1Name, player2Name) {
+      if (game.running()) { // If a game is running we stop it
+        game.stop();
+      }
+      var weapons = weaponFactory.get(MAX_WEAPON_COUNT);
+      var players = [
+        Player.new(player1Data.id, player1Name || DEFAULT_PLAYER_NAME + "1")
+        .equipWeapon(weapons[0]),
+        Player.new(player2Data.id, player2Name || DEFAULT_PLAYER_NAME + "2")
+        .equipWeapon(weapons[0])
+      ];
+
+      game.init(Grid.new(SIZE), weapons, players);
+      player1 = game.getPlayer(player1Data.id); // Get player1 data
+      player2 = game.getPlayer(player2Data.id); // Get player2 data
+      activePlayer = player1; // Gives focus to player 1
+      idlePlayer = player2; // Puts the player 2 into a idle state
+      updatePlayerData(player1);
+      updatePlayerData(player2);
+      game.start();
+      renderingSurface.init(game.grid);
+      renderingSurface.update();
+      keyInput();
+      return ([player1Data, player2Data]);
+    },
+
+    /*
+    ** getGamePhase
+    ** Gets the game current phase
+    ** @return GAMEPHASE
+    */
+    getGamePhase: function () {
+      this.gamePhase = (game.playerCollision() == true) ? GAMEPHASE.BATTLE : GAMEPHASE.MOVE;
+      return (game.gamePhase);
+    },
+
+    /*
+    ** getGrid
+    ** Fetches current grid state
+    ** @return Grid
+    */
+    getGrid: function() {
+      return (game.grid);
+    },
+
+    /*
+    ** Retrieves a player's data
+    ** @param playerId : int
+    ** @return PlayerData
+    */
+    getPlayerData: function(playerId) {
+      return {
+        player1: player1Data,
+        player2: player2Data
+      };
+    },
+
+    /*
+    ** getWinnerPhrase
+    ** Returns a winning phrase depending on winner's status
+    ** @param playerId : int
+    ** @return string or null
+    */
+    getWinnerPhrase: function(playerId) {
+      if (!game.running()) {
+        return (null);
+      }
+      if ((playerId < 0) || (playerId > 1)) {
+        return (null);
+      }
+      var player = (playerId === 0) ? player1Data : player2Data;
+
+      if (player.hp >= MAX_PLAYER_HP * .75 ) {
+        return ("awkward !!! ".toUpperCase() + player.name + " you totally mastered this fight !".toUpperCase());
+      } else if (player.hp >= (MAX_PLAYER_HP * .5)) {
+        return ("Congratulations " + player.name + " the victory is yours !");
+      } else if (player.hp >= (MAX_PLAYER_HP * .25)) {
+        return ("Hey " + player.name + " that was a tough fight but you've proven you are the best.");
+      } else {
+        return (player.name + " wins.");
+      }
+    }
+  });
 })();
