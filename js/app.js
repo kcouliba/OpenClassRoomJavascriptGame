@@ -72,9 +72,33 @@ const app = (function() {
   }
 
   /*
+  ** precomputePlayerMove
+  ** Precomputes a player move
+  ** @param stepX : int
+  ** @param stepY : int
+  ** @return bool
+  */
+  function precomputePlayerMove(stepX, stepY) {
+    const fakeMove = {x: 0, y: 0};
+    if (!game.running()) {
+      return fakeMove;
+    }
+    if (!game.gamePhase === GAMEPHASE.MOVE) {
+      return fakeMove;
+    }
+    if (activePlayer === null) {
+      return fakeMove;
+    }
+    if ((Math.abs(stepX) > MAX_PLAYER_MOVE)
+    || (Math.abs(stepY) > MAX_PLAYER_MOVE)) {
+      return fakeMove;
+    }
+    return game.precomputePlayerMove(activePlayer, stepX, stepY);
+  }
+
+  /*
   ** playerMove
   ** Make a player move
-  ** @param playerId : int
   ** @param stepX : int
   ** @param stepY : int
   ** @return bool
@@ -167,10 +191,24 @@ const app = (function() {
   /* Inputs */
 
   function subscribeMoveInput() {
-    keyInput((step) => {
-      playerMove(step.x, step.y);
-      renderingSurface.update();
-    });
+    "use strict";
+    let move = Position.new(0, 0);
+
+    playerMoveInput((step) => {
+        move = precomputePlayerMove(step.x, step.y);
+        step.x = move.x;
+        step.y = move.y;
+        renderingSurface.update({
+          startPosition: activePlayer.position,
+          move: {x: move.x, y: move.y}
+        });
+      },
+      () => {
+        playerMove(move.x, move.y);
+        move = Position.new(0, 0);
+        renderingSurface.update();
+      }
+    );
   }
 
   return ({
