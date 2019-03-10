@@ -96,7 +96,7 @@ document.dispatchEvent(ev);
             if (inputs[i].name == "playerDirection" && inputs[i].checked) {
               var split = inputs[i].value.split(',');
 
-              direction = Position.new(parseInt(split[0], 10), parseInt(split[1], 10));
+              direction = Vector2d.create(parseInt(split[0], 10), parseInt(split[1], 10));
               console.log(direction);
             }
             /* get the steps */
@@ -106,7 +106,7 @@ document.dispatchEvent(ev);
             }
           }
           if ((direction != null) && (step != 0)) {
-            move = Position.new(direction.x * step, direction.y * step);
+            move = Vector2d.create(direction.x * step, direction.y * step);
             app.playerMove(self.currentPlayer, move.x, move.y);
             self.currentPlayer = (self.currentPlayer === PLAYER.PLAYER1) ?
             PLAYER.PLAYER2 : PLAYER.PLAYER1;

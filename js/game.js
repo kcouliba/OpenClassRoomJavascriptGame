@@ -101,10 +101,10 @@ var Game = {
     ** @return Weapon or null
     */
     getWeaponAt: function(x, y) {
-        var at = Position.new(x, y);
+        var at = Vector2d.create(x, y);
 
         for (key in this.weapons) {
-            if (this.weapons[key].position.equals(at)) {
+            if (Vector2d.equals(this.weapons[key].position, at)) {
                 return (this.weapons[key]);
             }
         }
@@ -176,9 +176,9 @@ var Game = {
     ** @return Player
     */
     movePlayer: function(player, stepx, stepy) {
-        var currentPos = Position.clone(player.getPosition());
-        var move = Position.new(stepx, stepy);
-        var nextPos = currentPos.add(move);
+        var currentPos = Vector2d.clone(player.getPosition());
+        var move = Vector2d.create(stepx, stepy);
+        var nextPos = Vector2d.add(currentPos, move);
         var grid = this.grid;
 
         if (DEBUG) {
@@ -200,7 +200,7 @@ var Game = {
                     player.equipWeapon(this.getWeaponAt(i, currentPos.y));
                 } else if (grid.getCellState(i, currentPos.y) !== CELLSTATE.FREE) { // obstacle or player encountered
                     if (DEBUG) {
-                        console.log("Player " + player.name + " encountered an obstacle at : " + Position.new(i, currentPos.y));
+                        console.log("Player " + player.name + " encountered an obstacle at : " + Vector2d.create(i, currentPos.y));
                     }
                     nextPos.x = i + 1;
                     break ;
@@ -215,7 +215,7 @@ var Game = {
                     player.equipWeapon(this.getWeaponAt(i, currentPos.y));
                 } else if (grid.getCellState(i, currentPos.y) !== CELLSTATE.FREE) { // obstacle or player encountered
                     if (DEBUG) {
-                        console.log("Player " + player.name + " encountered an obstacle at : " + Position.new(i, currentPos.y));
+                        console.log("Player " + player.name + " encountered an obstacle at : " + Vector2d.create(i, currentPos.y));
                     }
                     nextPos.x = i - 1;
                     break ;
@@ -232,7 +232,7 @@ var Game = {
                     player.equipWeapon(this.getWeaponAt(nextPos.x, i));
                 } else if (grid.getCellState(nextPos.x, i) !== CELLSTATE.FREE) { // obstacle or player encountered
                     if (DEBUG) {
-                        console.log("Player " + player.name + " encountered an obstacle at : " + Position.new(nextPos.x, i));
+                        console.log("Player " + player.name + " encountered an obstacle at : " + Vector2d.create(nextPos.x, i));
                     }
                     nextPos.y = i + 1;
                     break ;
@@ -247,7 +247,7 @@ var Game = {
                     player.equipWeapon(this.getWeaponAt(nextPos.x, i));
                 } else if (grid.getCellState(nextPos.x, i) !== CELLSTATE.FREE) { // obstacle or player encountered
                     if (DEBUG) {
-                        console.log("Player " + player.name + " encountered an obstacle at : " + Position.new(nextPos.x, i));
+                        console.log("Player " + player.name + " encountered an obstacle at : " + Vector2d.create(nextPos.x, i));
                     }
                     nextPos.y = i - 1;
                     break ;
@@ -271,7 +271,7 @@ var Game = {
     ** @return bool
     */
     playerCollision: function() {
-        var gap = this.players[0].getPosition().sub(this.players[1].getPosition());
+        var gap = Vector2d.sub(this.players[0].getPosition(), this.players[1].getPosition());
 
         gap.x = Math.abs(gap.x);
         gap.y = Math.abs(gap.y);

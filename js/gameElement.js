@@ -24,7 +24,7 @@ var GameElement = {
         for (attr in object) {
             self[attr] = object[attr];
         }
-        self.position = Position.new(0, 0);
+        self.position = Vector2d.create(0, 0);
         return (self);
     },
 
