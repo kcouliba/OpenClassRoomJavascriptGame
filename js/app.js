@@ -10,7 +10,7 @@ const app = (function() {
     // WeaponFactory
     var weaponFactory = {
         weapons: [
-            WeaponFactory.create(DEFAULT_WEAPON_NAME, DEFAULT_WEAPON_DAMAGE),
+            WeaponFactory.create("Gloves", DEFAULT_WEAPON_DAMAGE),
             WeaponFactory.create("Pillow", 3),
             WeaponFactory.create("Bare hand", 5),
             WeaponFactory.create("Fork", 8),
@@ -73,7 +73,7 @@ const app = (function() {
                   .equipWeapon(weapons[0])
             ];
 
-            game.init(Grid.new(SIZE), weapons, players);
+            game.init(Grid.new(GRID_SIZE), weapons, players);
             player1 = game.getPlayer(player1Data.id); // Get player1 data
             player2 = game.getPlayer(player2Data.id); // Get player2 data
             updatePlayerData(player1);
