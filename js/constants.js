@@ -1,7 +1,6 @@
 /**
- * @name constants
+ * @name constants.js
  * @author Kevin Coulibaly <coulibaly.d.kevin@gmail.com>
- * @description Initialization of constant values
  */
 
 // Debug
@@ -19,18 +18,17 @@ const DEFAULT_PLAYER_NAME = 'Player'
 const MAX_PLAYER_COUNT = 2
 const MAX_PLAYER_HP = 100
 const MAX_PLAYER_MOVE = 3 // How many cells can the player go through
-
-// Weapon constants
-const MAX_WEAPON_COUNT = 2
-const DEFAULT_WEAPON_DAMAGE = 10
-
-// Player constants
-
-// Player ids
+const ATTACK_STANCE = 0
+const DEFENSE_STANCE = 1
+// Player ids @TODO: remove this awkward thingy thing
 const PLAYER = {
   PLAYER1: 0,
   PLAYER2: 1,
 }
+
+// Weapon constants
+const MAX_WEAPON_COUNT = 2
+const DEFAULT_WEAPON_DAMAGE = 10
 
 // Grid constants
 const GRID_SIZE = 10

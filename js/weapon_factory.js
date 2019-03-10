@@ -1,6 +1,10 @@
 /**
- * @name WeaponFactory
+ * @name weapon_factory.js
  * @author Kevin Coulibaly <coulibaly.d.kevin@gmail.com>
+ */
+
+/**
+ * @name WeaponFactory
  * @description Weapon factory
  */
 const WeaponFactory = (function() {

@@ -1,9 +1,13 @@
 /**
- * @name Grid
+ * @name grid.js
  * @author Kevin Coulibaly <coulibaly.d.kevin@gmail.com>
- * @description Grid class
  */
 
+/**
+ * @name Grid
+ * @description Grid class
+ * @param {Number} size
+ */
 function Grid(size) {
   this.size = parseInt(size, 10)
   this.grid = generateGrid(size)

@@ -67,10 +67,8 @@ const app = (function() {
             }
             var weapons = weaponFactory.get(MAX_WEAPON_COUNT);
             var players = [
-                Player.new(player1Data.id, player1Name || DEFAULT_PLAYER_NAME + "1")
-                  .equipWeapon(weapons[0]),
-                Player.new(player2Data.id, player2Name || DEFAULT_PLAYER_NAME + "2")
-                  .equipWeapon(weapons[0])
+                PlayerFactory.create(player1Name || DEFAULT_PLAYER_NAME + "1").equipWeapon(weapons[0]),
+                PlayerFactory.create(player2Name || DEFAULT_PLAYER_NAME + "2").equipWeapon(weapons[0]),
             ];
 
             game.init(new Grid(GRID_SIZE), weapons, players);

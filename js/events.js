@@ -116,28 +116,28 @@ document.dispatchEvent(ev);
             ui.update();
           }
         } else if (app.getGamePhase() === GAMEPHASE.BATTLE) {
-          var actionPlayer1 = Player.STANCE.ATTACK;
-          var actionPlayer2 = Player.STANCE.ATTACK;
+          var actionPlayer1 = ATTACK_STANCE;
+          var actionPlayer2 = ATTACK_STANCE;
 
-          app.playerSetStance(PLAYER.PLAYER1, Player.STANCE.ATTACK);
-          app.playerSetStance(PLAYER.PLAYER2, Player.STANCE.ATTACK);
+          app.playerSetStance(PLAYER.PLAYER1, ATTACK_STANCE);
+          app.playerSetStance(PLAYER.PLAYER2, ATTACK_STANCE);
           for (var i = 0; i < inputs.length; i++) {
             /* get player 1 action */
             if (inputs[i].name == "actionPlayer1" && inputs[i].checked) {
-              if (inputs[i].value == Player.STANCE.DEFENSE) {
-                app.playerSetStance(PLAYER.PLAYER1, Player.STANCE.DEFENSE);
-                actionPlayer1 = Player.STANCE.DEFENSE;
+              if (inputs[i].value == DEFENSE_STANCE) {
+                app.playerSetStance(PLAYER.PLAYER1, DEFENSE_STANCE);
+                actionPlayer1 = DEFENSE_STANCE;
               }
             }
             /* get player 2 action */
             if (inputs[i].name == "actionPlayer2" && inputs[i].checked) {
-              if (inputs[i].value == Player.STANCE.DEFENSE) {
-                app.playerSetStance(PLAYER.PLAYER2, Player.STANCE.DEFENSE);
-                actionPlayer2 = Player.STANCE.DEFENSE;
+              if (inputs[i].value == DEFENSE_STANCE) {
+                app.playerSetStance(PLAYER.PLAYER2, DEFENSE_STANCE);
+                actionPlayer2 = DEFENSE_STANCE;
               }
             }
           }
-          if (actionPlayer1 === Player.STANCE.ATTACK) {
+          if (actionPlayer1 === ATTACK_STANCE) {
             app.playerAttack(PLAYER.PLAYER1);
             // update the ui
             ui.update();
@@ -154,7 +154,7 @@ document.dispatchEvent(ev);
               return ;
             }
           }
-          if (actionPlayer2 === Player.STANCE.ATTACK) {
+          if (actionPlayer2 === ATTACK_STANCE) {
             app.playerAttack(PLAYER.PLAYER2);
             // update the ui
             ui.update();
@@ -187,14 +187,14 @@ document.dispatchEvent(ev);
       var self = this;
 
       attackButton.addEventListener('click', function() {
-        dataPlayer.setStance(Player.STANCE.ATTACK);
+        dataPlayer.setStance(ATTACK_STANCE);
         this.setAttribute('disabled', "disabled");
         //                        defendButton.removeAttribute('disabled');
         defendButton.setAttribute('disabled', "disabled");
       });
       // Defense event
       defendButton.addEventListener('click', function() {
-        dataPlayer.setStance(Player.STANCE.DEFENSE);
+        dataPlayer.setStance(DEFENSE_STANCE);
         this.setAttribute('disabled', "disabled");
         //                        attackButton.setAttribute('disabled', "disabled");
         attackButton.removeAttribute('disabled');
