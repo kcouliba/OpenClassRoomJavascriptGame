@@ -10,13 +10,13 @@ const app = (function() {
     // WeaponFactory
     var weaponFactory = {
         weapons: [
-            Weapon.new(DEFAULT_WEAPON_NAME, DEFAULT_WEAPON_DAMAGE),
-            Weapon.new("Pillow", 3),
-            Weapon.new("Bare hand", 5),
-            Weapon.new("Fork", 8),
-            Weapon.new("Club", 12),
-            Weapon.new("Hoover", 14),
-            Weapon.new("Shotgun", 30)
+            WeaponFactory.create(DEFAULT_WEAPON_NAME, DEFAULT_WEAPON_DAMAGE),
+            WeaponFactory.create("Pillow", 3),
+            WeaponFactory.create("Bare hand", 5),
+            WeaponFactory.create("Fork", 8),
+            WeaponFactory.create("Club", 12),
+            WeaponFactory.create("Hoover", 14),
+            WeaponFactory.create("Shotgun", 30)
         ],
 
         /*
