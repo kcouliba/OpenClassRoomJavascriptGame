@@ -4,20 +4,19 @@
  */
 
 var Game = {
-  /** Game attributes */
-
+  /** attributes */
   run: false,
   grid: null,
   weapons: [],
   players: [],
   gamePhase: null,
 
-  /** Game methods */
+  /* methods */
 
   /**
    * new
    * Returns a new Game instance
-   * @return this : Game instance
+   * @returns {Game}
    */
   new: function() {
     if (DEBUG) {
@@ -32,7 +31,7 @@ var Game = {
    * @param grid : Grid object
    * @param weapons : Weapon Array
    * @param players : Player Array
-   * @return this : Game instance
+   * @returns this : Game instance
    */
   init: function(grid, weapons, players) {
     this.weapons = []
@@ -68,7 +67,7 @@ var Game = {
   /**
    * running
    * Informs if the game is currently running
-   * @return bool
+   * @returns {Boolean}
    */
   running: function() {
     return this.run
@@ -99,7 +98,7 @@ var Game = {
    * Gets weapon at coordinates
    * @param x : int
    * @param y : int
-   * @return Weapon or null
+   * @returns Weapon or null
    */
   getWeaponAt: function(x, y) {
     var at = Vector2d.create(x, y)
@@ -173,10 +172,67 @@ var Game = {
    * getPlayer
    * Returns player corresponding to a given id
    * @param id : int
-   * @return Player
+   * @returns Player
    */
   getPlayer: function(id) {
     return this.players[id]
+  },
+
+  /**
+   * @description return an array of available moves
+   * @param {Player} player
+   * @returns {Array}
+   */
+  getAvailableMoves: function(player, maxSteps) {
+    var currentPos = Vector2d.clone(player.getPosition())
+    var grid = this.grid
+    const availableMoves = []
+
+    // check left
+    for (var i = 0; i < maxSteps; i++) {
+      const pos = Vector2d.create(currentPos.x + (i + 1) * -1, currentPos.y)
+
+      if (grid.getCellState(pos.x, pos.y) !== CELLSTATE.FREE) {
+        break
+      } else {
+        availableMoves.push(pos)
+      }
+    }
+    // check up
+    for (var i = 0; i < maxSteps; i++) {
+      const pos = Vector2d.create(currentPos.x, currentPos.y + (i + 1) * -1)
+
+      if (grid.getCellState(pos.x, pos.y) !== CELLSTATE.FREE) {
+        break
+      } else {
+        availableMoves.push(pos)
+      }
+    }
+    // check right
+    for (var i = 0; i < maxSteps; i++) {
+      const pos = Vector2d.create(currentPos.x + i + 1, currentPos.y)
+
+      if (grid.getCellState(pos.x, pos.y) !== CELLSTATE.FREE) {
+        break
+      } else {
+        availableMoves.push(pos)
+      }
+    }
+    // check down
+    for (var i = 0; i < maxSteps; i++) {
+      const pos = Vector2d.create(currentPos.x, currentPos.y + i + 1)
+
+      if (grid.getCellState(pos.x, pos.y) !== CELLSTATE.FREE) {
+        break
+      } else {
+        availableMoves.push(pos)
+      }
+    }
+
+    if (DEBUG) {
+      console.log('where can I move to ?', { player, currentPos, availableMoves, maxSteps })
+    }
+    return availableMoves
   },
 
   /**
@@ -186,7 +242,7 @@ var Game = {
    * @param id : int
    * @param stepx : int
    * @param stepy : int
-   * @return Player
+   * @returns Player
    */
   movePlayer: function(player, stepx, stepy) {
     var currentPos = Vector2d.clone(player.getPosition())
@@ -315,7 +371,7 @@ var Game = {
   /**
    * playerCollision
    * Checks if players collide each other
-   * @return bool
+   * @returns {Boolean}
    */
   playerCollision: function() {
     var gap = Vector2d.sub(

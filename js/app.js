@@ -129,6 +129,27 @@ const app = (function() {
         },
 
         /*
+        ** getAvailableMoves
+        ** List a player move
+        ** @param playerId : int
+        ** @return bool
+        */
+        getAvailableMoves: function(playerId) {
+            if (!game.running()) {
+                return [];
+            }
+            if (!game.gamePhase === GAMEPHASE.MOVE) {
+                return [];
+            }
+            if ((playerId < 0) || (playerId > 1)) {
+                return [];
+            }
+            var player = (playerId === 0) ? player1 : player2;
+
+            return game.getAvailableMoves(player, MAX_PLAYER_MOVE);
+        },
+
+        /*
         ** playerAttack
         ** Make a player attack the other one
         ** @param playerId : int

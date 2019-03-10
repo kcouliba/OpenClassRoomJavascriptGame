@@ -76,6 +76,24 @@ const RenderingSurface = {
         this.ctx.strokeWidth = "2px";
         this.ctx.strokeStyle = COLOR.RED;
         this.ctx.strokeRect(0 * step, 0 * step, step, step);
+        this.highlightAvailableMoves(0)
+        this.highlightAvailableMoves(1)
+    },
+
+    /*
+    ** highlightAvailableMoves
+    ** Draw available moves
+    */
+   highlightAvailableMoves: function(playerId) {
+        var grid = app.getGrid();
+        var step = this.width / grid.size;
+        const availableMoves = app.getAvailableMoves(playerId)
+        const ctx = this.ctx
+
+        availableMoves.forEach(function(move) {
+            ctx.fillStyle = COLOR.HIGHLIGHT_WHITE;
+            ctx.fillRect(move.x * step, move.y * step, step, step);
+        })
     },
 
     /*

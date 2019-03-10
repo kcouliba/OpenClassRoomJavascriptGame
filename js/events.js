@@ -72,7 +72,6 @@ document.dispatchEvent(ev);
         // update the ui
         ui.update();
         btn.setAttribute("disabled", "disabled");
-        console.log(btn);
       });
     },
 
