@@ -41,16 +41,34 @@ const app = (function() {
     // Game mandatory variables
     var game = Game.new();
     var player1, player2;
-    var player1Data = Object.create(GamePlayer);
-    var player2Data = Object.create(GamePlayer);
+    var player1Data, player2Data;
 
-    player1Data.id = 0;
-    player2Data.id = 1;
+    function initPlayersData(player1, player2) {
+        player1Data = GamePlayerFactory.create(
+            player1.id,
+            player1.name,
+            player1.hp,
+            player1.weapon.name,
+            player1.weapon.damage
+        )
+        player2Data = GamePlayerFactory.create(
+            player2.id,
+            player2.name,
+            player2.hp,
+            player2.weapon.name,
+            player2.weapon.damage
+        )
+    }
 
     function updatePlayerData(player) {
         var playerData = (player.id === 0) ? player1Data : player2Data;
 
-        playerData.init(player.name, player.hp, player.weapon.name, player.weapon.damage);
+        if (!playerData) {
+            return
+        }
+        playerData.hp = player.hp
+        playerData.weaponName = player.weapon.name
+        playerData.weaponDamage = player.weapon.damage
     }
 
     return ({
@@ -72,10 +90,9 @@ const app = (function() {
             ];
 
             game.init(new Grid(GRID_SIZE), weapons, players);
-            player1 = game.getPlayer(player1Data.id); // Get player1 data
-            player2 = game.getPlayer(player2Data.id); // Get player2 data
-            updatePlayerData(player1);
-            updatePlayerData(player2);
+            player1 = game.getPlayer(0); // Get player1 data
+            player2 = game.getPlayer(1); // Get player2 data
+            initPlayersData(player1, player2);
             game.start();
             return ([player1Data, player2Data]);
         },
