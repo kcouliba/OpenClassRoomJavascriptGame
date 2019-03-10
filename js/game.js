@@ -40,10 +40,10 @@ var Game = {
         this.players = [];
         this.grid = grid;
         for (var i = 0; i < weapons.length; i++) { // Tranforms Weapon into GameElement object
-            this.weapons.push(GameElement.new(weapons[i]));
+            this.weapons.push(GameElementFactory.create(weapons[i]));
         }
         for (var i = 0; i < players.length; i++) { // Tranforms Player into GameElement object
-            this.players.push(GameElement.new(players[i]));
+            this.players.push(GameElementFactory.create(players[i]));
         }
         this.placeElements();
         this.gamePhase = GAMEPHASE.MOVE;
