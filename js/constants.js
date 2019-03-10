@@ -1,3 +1,9 @@
+/**
+ * @name constants
+ * @author Kevin Coulibaly <coulibaly.d.kevin@gmail.com>
+ * @description Initialization of constant values
+ */
+
 // Debug
 const DEBUG = true
 const COLOR = {

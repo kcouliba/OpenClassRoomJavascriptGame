@@ -73,7 +73,7 @@ const app = (function() {
                   .equipWeapon(weapons[0])
             ];
 
-            game.init(Grid.new(GRID_SIZE), weapons, players);
+            game.init(new Grid(GRID_SIZE), weapons, players);
             player1 = game.getPlayer(player1Data.id); // Get player1 data
             player2 = game.getPlayer(player2Data.id); // Get player2 data
             updatePlayerData(player1);

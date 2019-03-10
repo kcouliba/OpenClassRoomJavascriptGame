@@ -1,86 +1,66 @@
-/*
-** grid.js
-** Author coulibaly.d.kevin@gmail.com
-** Grid definition
-*/
+/**
+ * @name Grid
+ * @author Kevin Coulibaly <coulibaly.d.kevin@gmail.com>
+ * @description Grid class
+ */
 
-/*
-** Grid Class
-*/
-var Grid = {
-    /* Grid attributes */
-    
-    size: 0,
-    obstacles: 0,
-    grid: [],
-    
-    /* Grid methods */
-    
-    /*
-    ** stateAt
-    ** Returns the cell state at coords
-    ** @param x : int
-    ** @param y : int
-    ** @return CELLSTATE : int
-    */
-    stateAt: function(x, y) {
-        if (DEBUG) {
-            console.log("State at (" + x + ", " + y + ") = " + this.grid[x + (y * this.size)]);
-        }
-        return (this.grid[x + (y * this.size)]);
-    },
-    
-    /* new
-    ** Returns a new generated grid
-    ** @param size : int
-    ** @return grid : Grid
-    */
-    new: function (size) {
-        var self = Object.create(this);
-        
-        self.size = parseInt(size, 10);
-        self.obstacles = Math.floor(Math.random() * (self.size - 1)); // Count of obstacles on the grid -1 to ease the map generator
-        self.grid = generateGrid(self.size, self.obstacles);
-        if (DEBUG) {
-            console.log("New grid created.");
-            console.log(self);
-            console.log(self.toString());
-        }
-        return (self);
-    },
-    
-    /*
-    ** toString
-    ** Returns a string representation of the instance
-    ** @return String
-    */
-    toString: function() {
-        return ("Grid with dimension " + this.size + " x " + this.size);
-    }
-};
+function Grid(size) {
+  this.size = parseInt(size, 10)
+  this.grid = generateGrid(size)
 
-/*
-** generateGrid
-** Randomly generates a grid
-** @param size : Number
-** @param obstacleCount : Number
-** @return Array
-*/
-function generateGrid(size, obstacleCount) {
-    var cellsCount = size * size;
-    var row = 0;
-    var grid = [];
-    
-    for (var i = 0; i < cellsCount; i++) {
-        row += (i % 10 == 0) ? 1 : 0;
-        if ((Math.round(Math.random() * cellsCount) < 15) && (obstacleCount-- > 0)) {
-            grid.push(CELLSTATE.OBSTACLE);
-        } else {
-            grid.push(CELLSTATE.FREE);
-        }
-    }
+  if (DEBUG) {
+    console.log('New grid created.')
+    console.log(this)
+  }
+
+  /**
+   * @name getCellState
+   * @description Returns the cell state at coords
+   * @param {Number} x
+   * @param {Number} y
+   * @return {CELLSTATE}
+   */
+  this.getCellState = function(x, y) {
     if (DEBUG) {
-        console.log("New grid randomly generated.");
+      console.log(
+        'State at (' + x + ', ' + y + ') = ' + this.grid[x + y * this.size]
+      )
     }
-    return (grid);
+    return this.grid[x + y * this.size]
+  }
+
+  /**
+   * @name toString
+   * @description Returns a string representation of the instance
+   * @return {String}
+   */
+  this.toString = function() {
+    return 'Grid with dimension ' + this.size + ' x ' + this.size
+  }
+
+  return this
+}
+
+/**
+ * @name generateGrid
+ * @description Randomly generates a grid
+ * @param {Number} size
+ * @return {Array}
+ */
+function generateGrid(size) {
+  const cellsCount = size * size
+  const grid = []
+  let obstacleCount = Math.floor(Math.random() * (size - 1)) // Count of obstacles on the grid -1 to ease the map generator
+
+  for (let i = 0; i < cellsCount; i++) {
+    if (Math.round(Math.random() * cellsCount) < 15 && obstacleCount-- > 0) {
+      grid.push(CELLSTATE.OBSTACLE)
+    } else {
+      grid.push(CELLSTATE.FREE)
+    }
+  }
+  if (DEBUG) {
+    console.log('New grid randomly generated.')
+  }
+  return grid
 }

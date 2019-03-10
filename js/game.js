@@ -196,9 +196,9 @@ var Game = {
                 console.log("Player " + player.name + " is moving left");
             }
             for (var i = currentPos.x - 1; i >= nextPos.x; i--) {
-                if (grid.stateAt(i, currentPos.y) === CELLSTATE.WEAPON) { // weapon encountered
+                if (grid.getCellState(i, currentPos.y) === CELLSTATE.WEAPON) { // weapon encountered
                     player.equipWeapon(this.getWeaponAt(i, currentPos.y));
-                } else if (grid.stateAt(i, currentPos.y) !== CELLSTATE.FREE) { // obstacle or player encountered
+                } else if (grid.getCellState(i, currentPos.y) !== CELLSTATE.FREE) { // obstacle or player encountered
                     if (DEBUG) {
                         console.log("Player " + player.name + " encountered an obstacle at : " + Position.new(i, currentPos.y));
                     }
@@ -213,7 +213,7 @@ var Game = {
             for (var i = currentPos.x + 1; i <= nextPos.x; i++) {
                 if (grid.grid[i + (currentPos.y * grid.size)] === CELLSTATE.WEAPON) { // weapon encountered
                     player.equipWeapon(this.getWeaponAt(i, currentPos.y));
-                } else if (grid.stateAt(i, currentPos.y) !== CELLSTATE.FREE) { // obstacle or player encountered
+                } else if (grid.getCellState(i, currentPos.y) !== CELLSTATE.FREE) { // obstacle or player encountered
                     if (DEBUG) {
                         console.log("Player " + player.name + " encountered an obstacle at : " + Position.new(i, currentPos.y));
                     }
@@ -228,9 +228,9 @@ var Game = {
                 console.log("Player " + player.name + " is moving up");
             }
             for (var i = currentPos.y - 1; i >= nextPos.y; i--) {
-                if (grid.stateAt(nextPos.x, i) === CELLSTATE.WEAPON) { // weapon encountered
+                if (grid.getCellState(nextPos.x, i) === CELLSTATE.WEAPON) { // weapon encountered
                     player.equipWeapon(this.getWeaponAt(nextPos.x, i));
-                } else if (grid.stateAt(nextPos.x, i) !== CELLSTATE.FREE) { // obstacle or player encountered
+                } else if (grid.getCellState(nextPos.x, i) !== CELLSTATE.FREE) { // obstacle or player encountered
                     if (DEBUG) {
                         console.log("Player " + player.name + " encountered an obstacle at : " + Position.new(nextPos.x, i));
                     }
@@ -243,9 +243,9 @@ var Game = {
                 console.log("Player " + player.name + " is moving down");
             }
             for (var i = currentPos.y + 1; i <= nextPos.y; i++) {
-                if (grid.stateAt(nextPos.x, i) === CELLSTATE.WEAPON) { // weapon encountered
+                if (grid.getCellState(nextPos.x, i) === CELLSTATE.WEAPON) { // weapon encountered
                     player.equipWeapon(this.getWeaponAt(nextPos.x, i));
-                } else if (grid.stateAt(nextPos.x, i) !== CELLSTATE.FREE) { // obstacle or player encountered
+                } else if (grid.getCellState(nextPos.x, i) !== CELLSTATE.FREE) { // obstacle or player encountered
                     if (DEBUG) {
                         console.log("Player " + player.name + " encountered an obstacle at : " + Position.new(nextPos.x, i));
                     }
